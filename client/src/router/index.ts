@@ -14,6 +14,14 @@ const router = createRouter({
         title: "eCommerce Dashboard",
       },
     },
+     {
+      path: "/timetable",
+      name: "Student Time Table",
+      component: () => import("../views/Others/StdCalendar.vue"),
+      meta: {
+        title: "Student Time Table",
+      },
+    },
     {
       path: "/calendar",
       name: "Calendar",

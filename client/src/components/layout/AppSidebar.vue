@@ -247,6 +247,11 @@ const menuGroups = [
         name: "Dashboard",
         subItems: [{ name: "Ecommerce", path: "/", pro: false }],
       },
+       {
+        icon: CalenderIcon,
+        name: "Student Time Table",
+        path: "/timetable",
+      },
       {
         icon: CalenderIcon,
         name: "Calendar",

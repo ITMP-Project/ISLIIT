@@ -65,12 +65,28 @@ const products = [
   },
 ];
 
+const timeTables = [
+  {
+    title: "Assignment 1 Submission",
+    type: "assignment",
+    courseCode: "IT3030",
+    courseName: "Web Engineering",
+    date: "2026-03-18",
+    startTime: "00:00",
+    endTime: "23:59",
+    description: "Submit via LMS",
+    createdBy: "admin",
+    createdAt: new Date("2026-02-06"),
+  },
+];
+
 const run = async () => {
   const db = await getDb();
 
   await db.collection("users").deleteMany({});
   await db.collection("products").deleteMany({});
   await db.collection("comments").deleteMany({});
+  await db.collection("time_table").deleteMany({});
 
   await db.collection("users").insertMany(users);
   const productResult = await db.collection("products").insertMany(products);
@@ -101,8 +117,9 @@ const run = async () => {
   ];
 
   await db.collection("comments").insertMany(comments);
+  await db.collection("time_table").insertMany(timeTables);
   await closeDb();
-  console.log("Seeded users, products, and comments collections.");
+  console.log("Seeded users, products, comments, and time_table collections.");
 };
 
 run().catch((error) => {

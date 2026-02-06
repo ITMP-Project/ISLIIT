@@ -23,3 +23,17 @@ export type MongoComment = {
   message: string;
   createdAt?: string;
 };
+
+export type MongoTimeTable = {
+  _id?: string;
+  title: string;
+  type: string;
+  courseCode: string;
+  courseName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  description: string;
+  createdBy: string;
+  createdAt?: string;
+};
