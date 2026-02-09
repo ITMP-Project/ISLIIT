@@ -31,10 +31,7 @@
                     <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Name</p>
                   </th>
                   <th class="px-5 py-3 text-left sm:px-6">
-                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Email</p>
-                  </th>
-                  <th class="px-5 py-3 text-left sm:px-6">
-                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Password</p>
+                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Age</p>
                   </th>
                   <th class="px-5 py-3 text-left sm:px-6">
                     <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">ID</p>
@@ -44,17 +41,14 @@
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr
                   v-for="user in users"
-                  :key="user._id ?? user.email"
+                  :key="user._id ?? user.name"
                   class="border-t border-gray-100 dark:border-gray-800"
                 >
                   <td class="px-5 py-4 sm:px-6">
                     <p class="text-gray-800 text-theme-sm dark:text-white/90">{{ user.name }}</p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
-                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.email }}</p>
-                  </td>
-                  <td class="px-5 py-4 sm:px-6">
-                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.password }}</p>
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.age }}</p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user._id }}</p>

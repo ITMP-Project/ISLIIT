@@ -1,4 +1,11 @@
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
 const mongoUri = process.env.MONGO_URI ?? "mongodb://127.0.0.1:27017";
 const dbName = process.env.DB_NAME ?? "tailadmin_demo";
