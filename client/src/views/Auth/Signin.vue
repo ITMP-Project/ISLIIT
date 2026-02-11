@@ -42,20 +42,20 @@
              
                 <form @submit.prevent="handleSubmit">
                   <div class="space-y-5">
-                    <!-- Email -->
+                    <!-- Username -->
                     <div>
                       <label
-                        for="email"
+                        for="username"
                         class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
                       >
-                        Email<span class="text-error-500">*</span>
+                        Username<span class="text-error-500">*</span>
                       </label>
                       <input
-                        v-model="email"
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="info@gmail.com"
+                        v-model="username"
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
                         class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                       />
                     </div>
@@ -114,63 +114,17 @@
                         </span>
                       </div>
                     </div>
-                    <!-- Checkbox -->
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <label
-                          for="keepLoggedIn"
-                          class="flex items-center text-sm font-normal text-gray-700 cursor-pointer select-none dark:text-gray-400"
-                        >
-                          <div class="relative">
-                            <input
-                              v-model="keepLoggedIn"
-                              type="checkbox"
-                              id="keepLoggedIn"
-                              class="sr-only"
-                            />
-                            <div
-                              :class="
-                                keepLoggedIn
-                                  ? 'border-brand-500 bg-brand-500'
-                                  : 'bg-transparent border-gray-300 dark:border-gray-700'
-                              "
-                              class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]"
-                            >
-                              <span :class="keepLoggedIn ? '' : 'opacity-0'">
-                                <svg
-                                  width="14"
-                                  height="14"
-                                  viewBox="0 0 14 14"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M11.6666 3.5L5.24992 9.91667L2.33325 7"
-                                    stroke="white"
-                                    stroke-width="1.94437"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                          </div>
-                          Keep me logged in
-                        </label>
-                      </div>
-                      <router-link
-                        to="/reset-password"
-                        class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                        >Forgot password?</router-link
-                      >
+                    <div v-if="errorMessage" class="text-sm text-error-600 dark:text-error-400">
+                      {{ errorMessage }}
                     </div>
                     <!-- Button -->
                     <div>
                       <button
                         type="submit"
-                        class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+                        class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70"
+                        :disabled="submitting"
                       >
-                        Sign In
+                        {{ submitting ? "Signing in..." : "Sign In" }}
                       </button>
                     </div>
                   </div>
@@ -215,21 +169,53 @@
 import { ref } from 'vue'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
-const email = ref('')
+import { useRouter } from 'vue-router'
+const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
-const keepLoggedIn = ref(false)
+const submitting = ref(false)
+const errorMessage = ref('')
+const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const router = useRouter()
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
-const handleSubmit = () => {
-  // Handle form submission
-  console.log('Form submitted', {
-    email: email.value,
-    password: password.value,
-    keepLoggedIn: keepLoggedIn.value,
-  })
+const handleSubmit = async () => {
+  errorMessage.value = ''
+
+  if (!username.value.trim() || !password.value.trim()) {
+    errorMessage.value = 'Username and password are required.'
+    return
+  }
+
+  submitting.value = true
+  try {
+    const response = await fetch(`${apiUrl}/api/auth/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username.value.trim(),
+        password: password.value,
+      }),
+    })
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null)
+      throw new Error(data?.error ?? `Request failed: ${response.status}`)
+    }
+
+    const data = await response.json().catch(() => null)
+    if (data) {
+      localStorage.setItem('authUser', JSON.stringify(data))
+    }
+
+    await router.push('/')
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : 'Unknown error'
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
