@@ -4,6 +4,7 @@ import usersRouter from "./routes/users.mjs";
 import productsRouter from "./routes/products.mjs";
 import commentsRouter from "./routes/comments.mjs";
 import timeTablesRouter from "./routes/timetables.mjs";
+import authRouter from "./routes/auth.mjs";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/time-tables", timeTablesRouter);
+app.use("/api/auth", authRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
