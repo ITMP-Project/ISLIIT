@@ -180,12 +180,39 @@ const router = createRouter({
         title: "Signup",
       },
     },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("../views/Errors/FourZeroFour.vue"),
+      meta: {
+        title: "404 Error",
+      },
+    },
   ],
 });
 
 export default router;
 
+const readAuthUser = () => {
+  return localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+};
+
 router.beforeEach((to, from, next) => {
   document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`;
+
+  const isPublicRoute =
+    to.path === "/signin" || to.path === "/signup" || to.path === "/error-404";
+  const hasUser = Boolean(readAuthUser());
+
+  if (!isPublicRoute && !hasUser) {
+    next({ path: "/signin", query: { redirect: to.fullPath } });
+    return;
+  }
+
+  if (isPublicRoute && hasUser) {
+    next({ path: "/" });
+    return;
+  }
+
   next();
 });

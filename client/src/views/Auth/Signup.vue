@@ -318,7 +318,7 @@ const handleSubmit = async () => {
     password.value = ''
     role.value = 'students'
     agreeToTerms.value = false
-    await router.push('/')
+    await router.push('/signin')
   } catch (err) {
     toast.error(err instanceof Error ? err.message : 'Sign up failed.')
   } finally {
