@@ -165,12 +165,6 @@
                       </span>
                     </div>
                   </div>
-                  <div v-if="errorMessage" class="text-sm text-error-600 dark:text-error-400">
-                    {{ errorMessage }}
-                  </div>
-                  <div v-if="successMessage" class="text-sm text-green-600 dark:text-green-400">
-                    {{ successMessage }}
-                  </div>
                   <!-- Checkbox -->
                   <div>
                     <div>
@@ -275,6 +269,7 @@ import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 const username = ref('')
 const role = ref('students')
@@ -282,26 +277,22 @@ const password = ref('')
 const showPassword = ref(false)
 const agreeToTerms = ref(false)
 const submitting = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
 const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
 const router = useRouter()
+const toast = useToast()
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
 const handleSubmit = async () => {
-  errorMessage.value = ''
-  successMessage.value = ''
-
   if (!agreeToTerms.value) {
-    errorMessage.value = 'Please agree to the terms before signing up.'
+    toast.error('Please agree to the terms before signing up.')
     return
   }
 
   if (!username.value.trim() || !password.value.trim()) {
-    errorMessage.value = 'Username and password are required.'
+    toast.error('Username and password are required.')
     return
   }
 
@@ -322,14 +313,14 @@ const handleSubmit = async () => {
       throw new Error(data?.error ?? `Request failed: ${response.status}`)
     }
 
-    successMessage.value = 'Account created. You can sign in now.'
+    toast.success('Account created. You can sign in now.')
     username.value = ''
     password.value = ''
     role.value = 'students'
     agreeToTerms.value = false
     await router.push('/')
   } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : 'Unknown error'
+    toast.error(err instanceof Error ? err.message : 'Sign up failed.')
   } finally {
     submitting.value = false
   }

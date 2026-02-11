@@ -114,9 +114,6 @@
                         </span>
                       </div>
                     </div>
-                    <div v-if="errorMessage" class="text-sm text-error-600 dark:text-error-400">
-                      {{ errorMessage }}
-                    </div>
                     <!-- Button -->
                     <div>
                       <button
@@ -170,23 +167,22 @@ import { ref } from 'vue'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const submitting = ref(false)
-const errorMessage = ref('')
 const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
 const router = useRouter()
+const toast = useToast()
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
 const handleSubmit = async () => {
-  errorMessage.value = ''
-
   if (!username.value.trim() || !password.value.trim()) {
-    errorMessage.value = 'Username and password are required.'
+    toast.error('Username and password are required.')
     return
   }
 
@@ -211,9 +207,10 @@ const handleSubmit = async () => {
       localStorage.setItem('authUser', JSON.stringify(data))
     }
 
+    toast.success('Signed in successfully.')
     await router.push('/')
   } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : 'Unknown error'
+    toast.error(err instanceof Error ? err.message : 'Sign in failed.')
   } finally {
     submitting.value = false
   }
