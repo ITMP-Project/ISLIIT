@@ -87,6 +87,15 @@ const router = createRouter({
       },
     },
     {
+      path: "/role-management",
+      name: "Role Management",
+      component: () => import("../views/Admin/RoleManagement.vue"),
+      meta: {
+        title: "Role Management",
+        requiresAdmin: true,
+      },
+    },
+    {
       path: "/line-chart",
       name: "Line Chart",
       component: () => import("../views/Chart/LineChart/LineChart.vue"),
@@ -194,7 +203,25 @@ const router = createRouter({
 export default router;
 
 const readAuthUser = () => {
-  return localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+};
+
+const isAdminUser = () => {
+  const user = readAuthUser();
+  const roles = Array.isArray(user?.roles)
+    ? user.roles
+    : Array.isArray(user?.role)
+    ? user.role
+    : user?.role
+    ? [user.role]
+    : [];
+  return roles.some((role) => String(role).toLowerCase() === "admin");
 };
 
 router.beforeEach((to, from, next) => {
@@ -210,6 +237,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (isPublicRoute && hasUser) {
+    next({ path: "/" });
+    return;
+  }
+
+  if (to.meta.requiresAdmin && !isAdminUser()) {
     next({ path: "/" });
     return;
   }

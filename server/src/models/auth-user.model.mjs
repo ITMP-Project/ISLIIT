@@ -1,7 +1,4 @@
-const authUserFields = ["username", "password", "role"];
-const allowedRoles = new Set(["admin", "students"]);
-
-const normalizeRole = (value) => String(value ?? "").trim().toLowerCase();
+const authUserFields = ["username", "password"];
 
 export function validateAuthUserPayload(payload, { partial = false } = {}) {
   const errors = [];
@@ -17,16 +14,7 @@ export function validateAuthUserPayload(payload, { partial = false } = {}) {
       continue;
     }
 
-    if (field === "role") {
-      const normalized = normalizeRole(raw);
-      if (!allowedRoles.has(normalized)) {
-        errors.push(`role must be one of: ${Array.from(allowedRoles).join(", ")}`);
-      } else {
-        value.role = normalized;
-      }
-    } else {
-      value[field] = raw;
-    }
+    value[field] = raw;
   }
 
   if (!partial) {

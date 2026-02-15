@@ -146,7 +146,11 @@
                     "
                   >
                     <ul class="mt-2 space-y-1 ml-9">
-                      <li v-for="subItem in item.subItems" :key="subItem.name">
+                      <li
+                        v-for="subItem in item.subItems"
+                        :key="subItem.name"
+                        v-show="!subItem.adminOnly || isAdmin"
+                      >
                         <router-link
                           :to="subItem.path"
                           :class="[
@@ -238,6 +242,30 @@ const route = useRoute();
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
+const readAuthUser = () => {
+  const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+};
+
+const isAdmin = computed(() => {
+  // re-evaluate on route changes
+  const _path = route.path;
+  const user = readAuthUser();
+  const roles = Array.isArray(user?.roles)
+    ? user.roles
+    : Array.isArray(user?.role)
+    ? user.role
+    : user?.role
+    ? [user.role]
+    : [];
+  return roles.some((role) => String(role).toLowerCase() === "admin");
+});
+
 const menuGroups = [
   {
     title: "Menu",
@@ -279,6 +307,12 @@ const menuGroups = [
           { name: "Users Table", path: "/users-table", pro: false },
           { name: "Products Table", path: "/products-table", pro: false },
           { name: "Comments Table", path: "/comments-table", pro: false },
+          {
+            name: "Role Management",
+            path: "/role-management",
+            pro: false,
+            adminOnly: true,
+          },
         ],
       },
       {

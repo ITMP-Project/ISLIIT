@@ -36,3 +36,17 @@ export type MongoTimeTable = {
   createdBy: string;
   createdAt?: string;
 };
+
+export type AuthUser = {
+  _id?: string;
+  username: string;
+  roles?: string[];
+  role?: string[] | string;
+  createdAt?: string;
+};
+
+export type Role = {
+  _id?: string;
+  name: string;
+  createdAt?: string;
+};

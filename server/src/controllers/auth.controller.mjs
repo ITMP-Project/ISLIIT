@@ -2,6 +2,42 @@ import { randomUUID } from "crypto";
 import { getDb } from "../config/db.mjs";
 import { validateAuthUserPayload } from "../models/auth-user.model.mjs";
 
+const defaultRoles = ["user"];
+const normalizeRoles = (user) => {
+  if (Array.isArray(user?.roles)) {
+    return user.roles.map((role) => String(role)).filter(Boolean);
+  }
+
+  if (Array.isArray(user?.role)) {
+    return user.role.map((role) => String(role)).filter(Boolean);
+  }
+
+  if (user?.role) {
+    return [String(user.role)];
+  }
+
+  return [];
+};
+
+const ensureRolesExist = async (db, roles) => {
+  if (!roles.length) return;
+  const existing = await db
+    .collection("roles")
+    .find({ name: { $in: roles } })
+    .project({ name: 1 })
+    .toArray();
+  const existingNames = new Set(existing.map((role) => role.name));
+  const missing = roles.filter((role) => !existingNames.has(role));
+  if (!missing.length) return;
+  const now = new Date();
+  const docs = missing.map((name) => ({
+    _id: randomUUID(),
+    name,
+    createdAt: now,
+  }));
+  await db.collection("roles").insertMany(docs);
+};
+
 export async function signup(req, res, next) {
   try {
     const { valid, errors, value } = validateAuthUserPayload(req.body);
@@ -20,7 +56,14 @@ export async function signup(req, res, next) {
       return;
     }
 
-    const user = { _id: randomUUID(), ...value, createdAt: new Date() };
+    await ensureRolesExist(db, defaultRoles);
+
+    const user = {
+      _id: randomUUID(),
+      ...value,
+      roles: [...defaultRoles],
+      createdAt: new Date(),
+    };
     await db.collection("auth_users").insertOne(user);
 
     const { password, ...safeUser } = user;
@@ -57,8 +100,8 @@ export async function signin(req, res, next) {
       return;
     }
 
-    const { password: _password, ...safeUser } = user;
-    res.json(safeUser);
+    const { password: _password, role, roles, ...safeUser } = user;
+    res.json({ ...safeUser, roles: normalizeRoles({ role, roles }) });
   } catch (error) {
     next(error);
   }
