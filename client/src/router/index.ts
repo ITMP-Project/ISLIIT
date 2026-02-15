@@ -14,6 +14,14 @@ const router = createRouter({
         title: "eCommerce Dashboard",
       },
     },
+     {
+      path: "/timetable",
+      name: "Student Time Table",
+      component: () => import("../views/Others/StdCalendar.vue"),
+      meta: {
+        title: "Student Time Table",
+      },
+    },
     {
       path: "/calendar",
       name: "Calendar",
@@ -76,6 +84,15 @@ const router = createRouter({
       component: () => import("../views/Tables/CommentsTable.vue"),
       meta: {
         title: "Comments Table",
+      },
+    },
+    {
+      path: "/role-management",
+      name: "Role Management",
+      component: () => import("../views/Admin/RoleManagement.vue"),
+      meta: {
+        title: "Role Management",
+        requiresAdmin: true,
       },
     },
     {
@@ -172,12 +189,62 @@ const router = createRouter({
         title: "Signup",
       },
     },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("../views/Errors/FourZeroFour.vue"),
+      meta: {
+        title: "404 Error",
+      },
+    },
   ],
 });
 
 export default router;
 
+const readAuthUser = () => {
+  const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+};
+
+const isAdminUser = () => {
+  const user = readAuthUser();
+  const roles = Array.isArray(user?.roles)
+    ? user.roles
+    : Array.isArray(user?.role)
+    ? user.role
+    : user?.role
+    ? [user.role]
+    : [];
+  return roles.some((role) => String(role).toLowerCase() === "admin");
+};
+
 router.beforeEach((to, from, next) => {
   document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`;
+
+  const isPublicRoute =
+    to.path === "/signin" || to.path === "/signup" || to.path === "/error-404";
+  const hasUser = Boolean(readAuthUser());
+
+  if (!isPublicRoute && !hasUser) {
+    next({ path: "/signin", query: { redirect: to.fullPath } });
+    return;
+  }
+
+  if (isPublicRoute && hasUser) {
+    next({ path: "/" });
+    return;
+  }
+
+  if (to.meta.requiresAdmin && !isAdminUser()) {
+    next({ path: "/" });
+    return;
+  }
+
   next();
 });

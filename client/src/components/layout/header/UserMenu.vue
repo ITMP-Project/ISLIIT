@@ -80,8 +80,8 @@ const closeDropdown = () => {
 }
 
 const signOut = () => {
-  // Implement sign out logic here
-  console.log('Signing out...')
+  localStorage.removeItem('authUser')
+  sessionStorage.removeItem('authUser')
   closeDropdown()
 }
 

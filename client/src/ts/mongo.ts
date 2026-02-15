@@ -1,8 +1,7 @@
 export type MongoUser = {
   _id?: string;
   name: string;
-  email: string;
-  password: string;
+  age: number;
   createdAt?: string;
 };
 
@@ -21,5 +20,33 @@ export type MongoComment = {
   productId: string;
   author: string;
   message: string;
+  createdAt?: string;
+};
+
+export type MongoTimeTable = {
+  _id?: string;
+  title: string;
+  type: string;
+  courseCode: string;
+  courseName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  description: string;
+  createdBy: string;
+  createdAt?: string;
+};
+
+export type AuthUser = {
+  _id?: string;
+  username: string;
+  roles?: string[];
+  role?: string[] | string;
+  createdAt?: string;
+};
+
+export type Role = {
+  _id?: string;
+  name: string;
   createdAt?: string;
 };

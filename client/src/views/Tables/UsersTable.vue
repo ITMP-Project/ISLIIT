@@ -28,20 +28,15 @@
             required
           />
           <input
-            v-model.trim="form.email"
-            type="email"
-            placeholder="Email"
+            v-model.number="form.age"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Age"
             class="h-11 rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-700 outline-none transition focus:border-brand-500 dark:border-gray-700 dark:text-gray-200"
             required
           />
           <div class="flex gap-3">
-            <input
-              v-model.trim="form.password"
-              type="text"
-              placeholder="Password"
-              class="h-11 flex-1 rounded-lg border border-gray-200 bg-transparent px-4 text-sm text-gray-700 outline-none transition focus:border-brand-500 dark:border-gray-700 dark:text-gray-200"
-              required
-            />
             <button
               type="submit"
               class="h-11 rounded-lg bg-brand-500 px-4 text-sm font-medium text-white transition hover:bg-brand-600"
@@ -69,10 +64,7 @@
                     <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Name</p>
                   </th>
                   <th class="px-5 py-3 text-left sm:px-6">
-                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Email</p>
-                  </th>
-                  <th class="px-5 py-3 text-left sm:px-6">
-                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Password</p>
+                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Age</p>
                   </th>
                   <th class="px-5 py-3 text-left sm:px-6">
                     <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">ID</p>
@@ -85,29 +77,67 @@
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr
                   v-for="user in users"
-                  :key="user._id ?? user.email"
+                  :key="user._id ?? user.name"
                   class="border-t border-gray-100 dark:border-gray-800"
                 >
                   <td class="px-5 py-4 sm:px-6">
-                    <p class="text-gray-800 text-theme-sm dark:text-white/90">{{ user.name }}</p>
+                    <template v-if="editingId === user._id">
+                      <input
+                        v-model.trim="editForm.name"
+                        type="text"
+                        class="h-9 w-full rounded-lg border border-gray-200 bg-transparent px-3 text-sm text-gray-700 outline-none transition focus:border-brand-500 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </template>
+                    <p v-else class="text-gray-800 text-theme-sm dark:text-white/90">{{ user.name }}</p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
-                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.email }}</p>
-                  </td>
-                  <td class="px-5 py-4 sm:px-6">
-                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.password }}</p>
+                    <template v-if="editingId === user._id">
+                      <input
+                        v-model.number="editForm.age"
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="h-9 w-24 rounded-lg border border-gray-200 bg-transparent px-3 text-sm text-gray-700 outline-none transition focus:border-brand-500 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </template>
+                    <p v-else class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user.age }}</p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ user._id }}</p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
-                    <button
-                      class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-800"
-                      @click="user._id && deleteUser(user._id)"
-                      :disabled="!user._id"
-                    >
-                      Delete
-                    </button>
+                    <div class="flex flex-wrap gap-2">
+                      <button
+                        v-if="editingId !== user._id"
+                        class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-800"
+                        @click="startEdit(user)"
+                        :disabled="!user._id"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        v-else
+                        class="rounded-lg bg-brand-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-brand-600"
+                        @click="user._id && saveEdit(user._id)"
+                        :disabled="!user._id"
+                      >
+                        Save
+                      </button>
+                      <button
+                        v-if="editingId === user._id"
+                        class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-800"
+                        @click="cancelEdit"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-800"
+                        @click="user._id && deleteUser(user._id)"
+                        :disabled="!user._id"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -130,23 +160,52 @@ import ComponentCard from "@/components/common/ComponentCard.vue";
 import { useUsersTableStore } from "@/store/usersTable";
 
 const currentPageTitle = ref("Users Table");
-const form = ref({ name: "", email: "", password: "" });
+const form = ref({ name: "", age: 18 });
 const saving = ref(false);
+const editingId = ref<string | null>(null);
+const editForm = ref({ name: "", age: 18 });
 
-const { users, loading, error, fetchUsers, createUser, deleteUser, apiUrl } =
-  useUsersTableStore();
+const {
+  users,
+  loading,
+  error,
+  fetchUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  apiUrl,
+} = useUsersTableStore();
 
 const handleCreate = async () => {
   saving.value = true;
   const created = await createUser({
     name: form.value.name,
-    email: form.value.email,
-    password: form.value.password,
+    age: form.value.age,
   });
   if (created) {
-    form.value = { name: "", email: "", password: "" };
+    form.value = { name: "", age: 18 };
   }
   saving.value = false;
+};
+
+const startEdit = (user: { _id?: string; name: string; age: number }) => {
+  if (!user._id) return;
+  editingId.value = user._id;
+  editForm.value = { name: user.name, age: user.age };
+};
+
+const cancelEdit = () => {
+  editingId.value = null;
+};
+
+const saveEdit = async (id: string) => {
+  const updated = await updateUser(id, {
+    name: editForm.value.name,
+    age: editForm.value.age,
+  });
+  if (updated) {
+    editingId.value = null;
+  }
 };
 
 onMounted(fetchUsers);
