@@ -13,12 +13,7 @@
     @mouseenter="!isExpanded && (isHovered = true)"
     @mouseleave="isHovered = false"
   >
-    <div
-      :class="[
-        'py-8 flex',
-        !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',
-      ]"
-    >
+    <div :class="['py-8 flex', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start']">
       <router-link to="/">
         <img
           v-if="isExpanded || isHovered || isMobileOpen"
@@ -36,27 +31,17 @@
           width="150"
           height="40"
         />
-        <img
-          v-else
-          src="/images/logo/logo-icon.svg"
-          alt="Logo"
-          width="32"
-          height="32"
-        />
+        <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
       </router-link>
     </div>
-    <div
-      class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar"
-    >
+    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
       <nav class="mb-6">
         <div class="flex flex-col gap-4">
           <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
             <h2
               :class="[
                 'mb-4 text-xs uppercase flex leading-[20px] text-gray-400',
-                !isExpanded && !isHovered
-                  ? 'lg:justify-center'
-                  : 'justify-start',
+                !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',
               ]"
             >
               <template v-if="isExpanded || isHovered || isMobileOpen">
@@ -75,9 +60,7 @@
                       'menu-item-active': isSubmenuOpen(groupIndex, index),
                       'menu-item-inactive': !isSubmenuOpen(groupIndex, index),
                     },
-                    !isExpanded && !isHovered
-                      ? 'lg:justify-center'
-                      : 'lg:justify-start',
+                    !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start',
                   ]"
                 >
                   <span
@@ -89,20 +72,15 @@
                   >
                     <component :is="item.icon" />
                   </span>
-                  <span
-                    v-if="isExpanded || isHovered || isMobileOpen"
-                    class="menu-item-text"
-                    >{{ item.name }}</span
-                  >
+                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{
+                    item.name
+                  }}</span>
                   <ChevronDownIcon
                     v-if="isExpanded || isHovered || isMobileOpen"
                     :class="[
                       'ml-auto w-5 h-5 transition-transform duration-200',
                       {
-                        'rotate-180 text-brand-500': isSubmenuOpen(
-                          groupIndex,
-                          index
-                        ),
+                        'rotate-180 text-brand-500': isSubmenuOpen(groupIndex, index),
                       },
                     ]"
                   />
@@ -120,18 +98,14 @@
                 >
                   <span
                     :class="[
-                      isActive(item.path)
-                        ? 'menu-item-icon-active'
-                        : 'menu-item-icon-inactive',
+                      isActive(item.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive',
                     ]"
                   >
                     <component :is="item.icon" />
                   </span>
-                  <span
-                    v-if="isExpanded || isHovered || isMobileOpen"
-                    class="menu-item-text"
-                    >{{ item.name }}</span
-                  >
+                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{
+                    item.name
+                  }}</span>
                 </router-link>
                 <transition
                   @enter="startTransition"
@@ -141,8 +115,7 @@
                 >
                   <div
                     v-show="
-                      isSubmenuOpen(groupIndex, index) &&
-                      (isExpanded || isHovered || isMobileOpen)
+                      isSubmenuOpen(groupIndex, index) && (isExpanded || isHovered || isMobileOpen)
                     "
                   >
                     <ul class="mt-2 space-y-1 ml-9">
@@ -156,12 +129,8 @@
                           :class="[
                             'menu-dropdown-item',
                             {
-                              'menu-dropdown-item-active': isActive(
-                                subItem.path
-                              ),
-                              'menu-dropdown-item-inactive': !isActive(
-                                subItem.path
-                              ),
+                              'menu-dropdown-item-active': isActive(subItem.path),
+                              'menu-dropdown-item-inactive': !isActive(subItem.path),
                             },
                           ]"
                         >
@@ -172,12 +141,8 @@
                               :class="[
                                 'menu-dropdown-badge',
                                 {
-                                  'menu-dropdown-badge-active': isActive(
-                                    subItem.path
-                                  ),
-                                  'menu-dropdown-badge-inactive': !isActive(
-                                    subItem.path
-                                  ),
+                                  'menu-dropdown-badge-active': isActive(subItem.path),
+                                  'menu-dropdown-badge-inactive': !isActive(subItem.path),
                                 },
                               ]"
                             >
@@ -188,12 +153,8 @@
                               :class="[
                                 'menu-dropdown-badge',
                                 {
-                                  'menu-dropdown-badge-active': isActive(
-                                    subItem.path
-                                  ),
-                                  'menu-dropdown-badge-inactive': !isActive(
-                                    subItem.path
-                                  ),
+                                  'menu-dropdown-badge-active': isActive(subItem.path),
+                                  'menu-dropdown-badge-inactive': !isActive(subItem.path),
                                 },
                               ]"
                             >
@@ -216,8 +177,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 import {
   GridIcon,
@@ -233,170 +194,298 @@ import {
   TableIcon,
   ListIcon,
   PlugInIcon,
-} from "../../icons";
-import SidebarWidget from "./SidebarWidget.vue";
-import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
-import { useSidebar } from "@/composables/useSidebar";
+} from '../../icons'
+import SidebarWidget from './SidebarWidget.vue'
+import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
+import { useSidebar } from '@/composables/useSidebar'
 
-const route = useRoute();
+const route = useRoute()
 
-const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
+const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar()
 
 const readAuthUser = () => {
-  const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
-  if (!raw) return null;
+  const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
+  if (!raw) return null
   try {
-    return JSON.parse(raw);
+    return JSON.parse(raw)
   } catch (error) {
-    return null;
+    return null
   }
-};
+}
 
 const isAdmin = computed(() => {
   // re-evaluate on route changes
-  const _path = route.path;
-  const user = readAuthUser();
+  const _path = route.path
+  const user = readAuthUser()
   const roles = Array.isArray(user?.roles)
     ? user.roles
     : Array.isArray(user?.role)
-    ? user.role
-    : user?.role
-    ? [user.role]
-    : [];
-  return roles.some((role) => String(role).toLowerCase() === "admin");
-});
+      ? user.role
+      : user?.role
+        ? [user.role]
+        : []
+  return roles.some((role) => String(role).toLowerCase() === 'admin')
+})
 
 const menuGroups = [
   {
-    title: "Menu",
+    title: 'Menu',
     items: [
       {
         icon: GridIcon,
-        name: "Dashboard",
-        subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-      },
-       {
-        icon: CalenderIcon,
-        name: "Student Time Table",
-        path: "/timetable",
-      },
-      {
-        icon: CalenderIcon,
-        name: "Calendar",
-        path: "/calendar",
-      },
-      {
-        icon: UserCircleIcon,
-        name: "User Profile",
-        path: "/profile",
-      },
-
-      {
-        name: "Forms",
-        icon: ListIcon,
+        name: 'Dashboard',
         subItems: [
-          { name: "Form Elements", path: "/form-elements", pro: false },
+          {
+            icon: GridIcon,
+            name: 'Student Dashboard',
+            path: '/student-dashboard',
+            pro: false,
+          },
+          {
+            icon: GridIcon,
+            name: 'Ecommerce Overview',
+            path: '/',
+            pro: false,
+          },
         ],
       },
       {
-        name: "Tables",
-        icon: TableIcon,
+        icon: GridIcon,
+        name: 'Admin Management',
         subItems: [
-          { name: "Basic Tables", path: "/basic-tables", pro: false },
-          { name: "Mongo Table", path: "/mongo-table", pro: false },
-          { name: "Users Table", path: "/users-table", pro: false },
-          { name: "Products Table", path: "/products-table", pro: false },
-          { name: "Comments Table", path: "/comments-table", pro: false },
           {
-            name: "Role Management",
-            path: "/role-management",
+            icon: GridIcon,
+            name: 'My Modules',
+            path: '/my-modules',
+            pro: false,
+          },
+          {
+            icon: GridIcon,
+            name: 'Module Events (Admin)',
+            path: '/admin/module-events',
             pro: false,
             adminOnly: true,
           },
         ],
       },
       {
-        name: "Pages",
+        icon: UserCircleIcon,
+        name: 'Student Management',
+        subItems: [
+          {
+            icon: UserCircleIcon,
+            name: 'My Timetable',
+            path: '/my-module-timetable',
+            pro: false,
+          },
+          {
+            icon: UserCircleIcon,
+            name: 'My Modules',
+            path: '/my-modules',
+            pro: false,
+          },
+          {
+            icon: CalenderIcon,
+            name: 'Calendar',
+            path: '/calendar',
+            pro: false,
+          },
+          {
+            icon: UserCircleIcon,
+            name: 'Profile',
+            path: '/profile',
+            pro: false,
+          },
+        ],
+      },
+      {
+        icon: BoxCubeIcon,
+        name: 'Role & Access',
+        subItems: [
+          {
+            icon: BoxCubeIcon,
+            name: 'Submit Request',
+            path: '/student-request',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Student Requests (Admin)',
+            path: '/admin-student-requests',
+            pro: false,
+            adminOnly: true,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Role Management',
+            path: '/role-management',
+            pro: false,
+            adminOnly: true,
+          },
+        ],
+      },
+      {
+        name: 'Forms',
+        icon: ListIcon,
+        subItems: [
+          {
+            icon: ListIcon,
+            name: 'Form Elements',
+            path: '/form-elements',
+            pro: false,
+          },
+        ],
+      },
+      {
+        name: 'Tables',
+        icon: TableIcon,
+        subItems: [
+          {
+            icon: TableIcon,
+            name: 'Basic Tables',
+            path: '/basic-tables',
+            pro: false,
+          },
+        ],
+      },
+      {
+        name: 'Pages',
         icon: PageIcon,
         subItems: [
-          { name: "Black Page", path: "/blank", pro: false },
-          { name: "404 Page", path: "/error-404", pro: false },
+          {
+            icon: PageIcon,
+            name: 'Blank Page',
+            path: '/blank',
+            pro: false,
+          },
+          {
+            icon: PageIcon,
+            name: '404 Page',
+            path: '/error-404',
+            pro: false,
+          },
         ],
       },
     ],
   },
   {
-    title: "Others",
+    title: 'Others',
     items: [
       {
         icon: PieChartIcon,
-        name: "Charts",
+        name: 'Charts',
         subItems: [
-          { name: "Line Chart", path: "/line-chart", pro: false },
-          { name: "Bar Chart", path: "/bar-chart", pro: false },
+          {
+            icon: PieChartIcon,
+            name: 'Line Chart',
+            path: '/line-chart',
+            pro: false,
+          },
+          {
+            icon: PieChartIcon,
+            name: 'Bar Chart',
+            path: '/bar-chart',
+            pro: false,
+          },
         ],
       },
       {
         icon: BoxCubeIcon,
-        name: "Ui Elements",
+        name: 'UI Elements',
         subItems: [
-          { name: "Alerts", path: "/alerts", pro: false },
-          { name: "Avatars", path: "/avatars", pro: false },
-          { name: "Badge", path: "/badge", pro: false },
-          { name: "Buttons", path: "/buttons", pro: false },
-          { name: "Images", path: "/images", pro: false },
-          { name: "Videos", path: "/videos", pro: false },
+          {
+            icon: BoxCubeIcon,
+            name: 'Alerts',
+            path: '/alerts',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Avatars',
+            path: '/avatars',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Badge',
+            path: '/badge',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Buttons',
+            path: '/buttons',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Images',
+            path: '/images',
+            pro: false,
+          },
+          {
+            icon: BoxCubeIcon,
+            name: 'Videos',
+            path: '/videos',
+            pro: false,
+          },
         ],
       },
       {
         icon: PlugInIcon,
-        name: "Authentication",
+        name: 'Authentication',
         subItems: [
-          { name: "Signin", path: "/signin", pro: false },
-          { name: "Signup", path: "/signup", pro: false },
+          {
+            icon: PlugInIcon,
+            name: 'Sign In',
+            path: '/signin',
+            pro: false,
+          },
+          {
+            icon: PlugInIcon,
+            name: 'Sign Up',
+            path: '/signup',
+            pro: false,
+          },
         ],
       },
-      // ... Add other menu items here
     ],
   },
-];
+]
 
-const isActive = (path) => route.path === path;
+const isActive = (path) => route.path === path
 
 const toggleSubmenu = (groupIndex, itemIndex) => {
-  const key = `${groupIndex}-${itemIndex}`;
-  openSubmenu.value = openSubmenu.value === key ? null : key;
-};
+  const key = `${groupIndex}-${itemIndex}`
+  openSubmenu.value = openSubmenu.value === key ? null : key
+}
 
 const isAnySubmenuRouteActive = computed(() => {
   return menuGroups.some((group) =>
     group.items.some(
-      (item) =>
-        item.subItems && item.subItems.some((subItem) => isActive(subItem.path))
-    )
-  );
-});
+      (item) => item.subItems && item.subItems.some((subItem) => isActive(subItem.path)),
+    ),
+  )
+})
 
 const isSubmenuOpen = (groupIndex, itemIndex) => {
-  const key = `${groupIndex}-${itemIndex}`;
+  const key = `${groupIndex}-${itemIndex}`
   return (
     openSubmenu.value === key ||
     (isAnySubmenuRouteActive.value &&
-      menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) =>
-        isActive(subItem.path)
-      ))
-  );
-};
+      menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) => isActive(subItem.path)))
+  )
+}
 
 const startTransition = (el) => {
-  el.style.height = "auto";
-  const height = el.scrollHeight;
-  el.style.height = "0px";
-  el.offsetHeight; // force reflow
-  el.style.height = height + "px";
-};
+  el.style.height = 'auto'
+  const height = el.scrollHeight
+  el.style.height = '0px'
+  el.offsetHeight // force reflow
+  el.style.height = height + 'px'
+}
 
 const endTransition = (el) => {
-  el.style.height = "";
-};
+  el.style.height = ''
+}
 </script>

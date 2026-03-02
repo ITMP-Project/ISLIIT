@@ -137,3 +137,35 @@ export async function updateAuthUserRoles(req, res, next) {
     next(error);
   }
 }
+
+export async function updateAuthUserModules(req, res, next) {
+  try {
+    const idQuery = buildIdQuery(req.params.id);
+    if (!idQuery) {
+      res.status(400).json({ error: "Invalid user id" });
+      return;
+    }
+
+    const rawModules = Array.isArray(req.body?.modules) ? req.body.modules : [];
+    const modules = rawModules
+      .map((entry) => String(entry ?? "").trim())
+      .filter((entry) => Boolean(entry));
+
+    const db = await getDb();
+    const user = await db.collection("auth_users").findOne(idQuery);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const result = await db.collection("auth_users").findOneAndUpdate(
+      { _id: user._id },
+      { $set: { modules } },
+      { returnDocument: "after" }
+    );
+
+    res.json(stripPassword(result.value ?? { ...user, modules }));
+  } catch (error) {
+    next(error);
+  }
+}
