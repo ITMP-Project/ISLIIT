@@ -15,6 +15,70 @@ const router = createRouter({
       },
     },
     {
+      path: "/peerpoint",
+      name: "Peer Point Dashboard",
+      component: () => import("../views/PeerPoint/PeerPointDashboard.vue"),
+      meta: {
+        title: "Peer Point Dashboard",
+      },
+    },
+    {
+      path: "/peerpoint/upload",
+      name: "Upload & AI Assistance",
+      component: () => import("../views/PeerPoint/UploadSection.vue"),
+      meta: {
+        title: "Upload & AI Assistance",
+      },
+    },
+    {
+      path: "/peerpoint/eco",
+      name: "Eco-Friendly Options",
+      component: () => import("../views/PeerPoint/EcoOptions.vue"),
+      meta: {
+        title: "Eco-Friendly Options",
+      },
+    },
+    {
+      path: "/peerpoint/customize",
+      name: "Order Customization",
+      component: () => import("../views/PeerPoint/OrderCustomization.vue"),
+      meta: {
+        title: "Order Customization",
+      },
+    },
+    {
+      path: "/peerpoint/printing",
+      name: "Document Printing",
+      component: () => import("../views/PeerPoint/DocumentPrinting.vue"),
+      meta: {
+        title: "Document Printing",
+      },
+    },
+    {
+      path: "/peerpoint/documents",
+      name: "Faculty Documents",
+      component: () => import("../views/PeerPoint/FacultyDocuments.vue"),
+      meta: {
+        title: "Faculty Documents",
+      },
+    },
+    {
+      path: "/peerpoint/payment",
+      name: "Payment Page",
+      component: () => import("../views/PeerPoint/PaymentPage.vue"),
+      meta: {
+        title: "Payment Page",
+      },
+    },
+    {
+      path: "/peerpoint/kits",
+      name: "Faculty Stationery Kits",
+      component: () => import("../views/PeerPoint/FacultyKits.vue"),
+      meta: {
+        title: "Faculty Stationery Kits",
+      },
+    },
+    {
       path: "/calendar",
       name: "Calendar",
       component: () => import("../views/Others/Calendar.vue"),
