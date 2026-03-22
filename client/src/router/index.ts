@@ -48,10 +48,18 @@ const router = createRouter({
     },
     {
       path: "/basic-tables",
-      name: "Basic Tables",
+      name: "Kuppi Sessions",
       component: () => import("../views/Tables/BasicTables.vue"),
       meta: {
-        title: "Basic Tables",
+        title: "Kuppi Sessions",
+      },
+    },
+    {
+      path: "/kuppi-sessions-duplicate",
+      name: "Kuppi Sessions Duplicate",
+      component: () => import("../views/Tables/KuppiSessionsDuplicate.vue"),
+      meta: {
+        title: "Kuppi Sessions Duplicate",
       },
     },
     {

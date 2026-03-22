@@ -307,7 +307,7 @@ const menuGroups = [
         name: "Tables",
         icon: TableIcon,
         subItems: [
-          { name: "Basic Tables", path: "/basic-tables", pro: false },
+          { name: "Kuppi Sessions Duplicate", path: "/kuppi-sessions-duplicate", pro: false },
           { name: "Mongo Table", path: "/mongo-table", pro: false },
           { name: "Users Table", path: "/users-table", pro: false },
           { name: "Products Table", path: "/products-table", pro: false },
