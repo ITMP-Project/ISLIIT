@@ -250,6 +250,16 @@ const menuGroups = [
         ],
       },
       {
+        icon: DocsIcon,
+        name: "Peer Point",
+        path: "/peerpoint",
+        subItems: [
+          { name: "Document Printing", path: "/peerpoint/printing", pro: false },
+          { name: "Faculty Documents", path: "/peerpoint/documents", pro: false },
+          { name: "Faculty Stationery Kits", path: "/peerpoint/kits", pro: false },
+        ],
+      },
+      {
         icon: GridIcon,
         name: 'Admin Management',
         subItems: [
