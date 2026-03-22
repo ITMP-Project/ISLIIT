@@ -50,3 +50,17 @@ export type Role = {
   name: string;
   createdAt?: string;
 };
+
+export type MongoKuppiSession = {
+  _id?: string;
+  title: string;
+  description: string;
+  subject: string;
+  date: string;
+  time: string;
+  teamsLink: string;
+  createdBy: string;
+  status: string;
+  createdAt?: string;
+};
+

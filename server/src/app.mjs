@@ -7,6 +7,7 @@ import timeTablesRouter from "./routes/timetables.mjs";
 import authRouter from "./routes/auth.mjs";
 import rolesRouter from "./routes/roles.mjs";
 import authUsersRouter from "./routes/auth-users.mjs";
+import kuppiSessionsRouter from "./routes/kuppi-sessions.mjs";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/time-tables", timeTablesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/roles", rolesRouter);
 app.use("/api/auth-users", authUsersRouter);
+app.use("/api/kuppi-sessions", kuppiSessionsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

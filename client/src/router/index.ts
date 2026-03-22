@@ -165,6 +165,23 @@ const router = createRouter({
     },
 
     {
+      path: "/kuppi-sessions",
+      name: "Kuppi Sessions",
+      component: () => import("../views/KuppiSessions/KuppiSessionsList.vue"),
+      meta: {
+        title: "Kuppi Sessions",
+      },
+    },
+    {
+      path: "/kuppi-sessions/:id",
+      name: "Kuppi Session Detail",
+      component: () => import("../views/KuppiSessions/KuppiSessionDetail.vue"),
+      meta: {
+        title: "Kuppi Session Detail",
+      },
+    },
+
+    {
       path: "/error-404",
       name: "404 Error",
       component: () => import("../views/Errors/FourZeroFour.vue"),
@@ -221,7 +238,7 @@ const isAdminUser = () => {
     : user?.role
     ? [user.role]
     : [];
-  return roles.some((role) => String(role).toLowerCase() === "admin");
+  return roles.some((role: string) => String(role).toLowerCase() === "admin");
 };
 
 router.beforeEach((to, from, next) => {
