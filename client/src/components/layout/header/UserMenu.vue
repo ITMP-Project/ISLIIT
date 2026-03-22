@@ -74,6 +74,7 @@
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
                      dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white"
               role="menuitem"
+              @click="closeDropdown"
             >
               <component
                 :is="item.icon"
@@ -127,14 +128,40 @@ const closeDropdown = () => {
   dropdownOpen.value = false
 }
 
-const handleSignOut = () => {
+const handleSignOut = async () => {
+  const userStr = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
+
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr)
+      const auth_user_id = user.id || user._id
+      const student_id = user.username
+
+      if (auth_user_id || student_id) {
+        const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+
+        fetch(`${apiUrl}/api/p-helper/presence/update`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            availability_status: 'offline',
+            auth_user_id,
+            student_id,
+          }),
+        }).catch(() => {})
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
+  }
+
   localStorage.removeItem('authUser')
   sessionStorage.removeItem('authUser')
   closeDropdown()
-  router.push('/signin')
+  await router.push('/signin')
 }
 
-const handleClickOutside = (event: Event) => {
+const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     closeDropdown()
   }

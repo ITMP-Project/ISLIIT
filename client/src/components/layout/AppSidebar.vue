@@ -34,6 +34,7 @@
         <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
       </router-link>
     </div>
+
     <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
       <nav class="mb-6">
         <div class="flex flex-col gap-4">
@@ -49,6 +50,7 @@
               </template>
               <HorizontalDots v-else />
             </h2>
+
             <ul class="flex flex-col gap-4">
               <li v-for="(item, index) in menuGroup.items" :key="item.name">
                 <button
@@ -72,9 +74,11 @@
                   >
                     <component :is="item.icon" />
                   </span>
-                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{
-                    item.name
-                  }}</span>
+
+                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">
+                    {{ item.name }}
+                  </span>
+
                   <ChevronDownIcon
                     v-if="isExpanded || isHovered || isMobileOpen"
                     :class="[
@@ -85,6 +89,7 @@
                     ]"
                   />
                 </button>
+
                 <router-link
                   v-else-if="item.path"
                   :to="item.path"
@@ -94,6 +99,7 @@
                       'menu-item-active': isActive(item.path),
                       'menu-item-inactive': !isActive(item.path),
                     },
+                    !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start',
                   ]"
                 >
                   <span
@@ -103,10 +109,12 @@
                   >
                     <component :is="item.icon" />
                   </span>
-                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{
-                    item.name
-                  }}</span>
+
+                  <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">
+                    {{ item.name }}
+                  </span>
                 </router-link>
+
                 <transition
                   @enter="startTransition"
                   @after-enter="endTransition"
@@ -135,6 +143,7 @@
                           ]"
                         >
                           {{ subItem.name }}
+
                           <span class="flex items-center gap-1 ml-auto">
                             <span
                               v-if="subItem.new"
@@ -148,6 +157,7 @@
                             >
                               new
                             </span>
+
                             <span
                               v-if="subItem.pro"
                               :class="[
@@ -171,21 +181,20 @@
           </div>
         </div>
       </nav>
+
       <SidebarWidget v-if="isExpanded || isHovered || isMobileOpen" />
     </div>
   </aside>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 import {
   GridIcon,
   CalenderIcon,
   UserCircleIcon,
-  ChatIcon,
-  MailIcon,
   DocsIcon,
   PieChartIcon,
   ChevronDownIcon,
@@ -195,17 +204,18 @@ import {
   ListIcon,
   PlugInIcon,
 } from '../../icons'
+
 import SidebarWidget from './SidebarWidget.vue'
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
 import { useSidebar } from '@/composables/useSidebar'
 
 const route = useRoute()
-
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar()
 
 const readAuthUser = () => {
   const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
   if (!raw) return null
+
   try {
     return JSON.parse(raw)
   } catch (error) {
@@ -214,8 +224,8 @@ const readAuthUser = () => {
 }
 
 const isAdmin = computed(() => {
-  // re-evaluate on route changes
-  const _path = route.path
+  route.path // keeps the computed reactive to route changes
+
   const user = readAuthUser()
   const roles = Array.isArray(user?.roles)
     ? user.roles
@@ -224,6 +234,7 @@ const isAdmin = computed(() => {
       : user?.role
         ? [user.role]
         : []
+
   return roles.some((role) => String(role).toLowerCase() === 'admin')
 })
 
@@ -250,13 +261,35 @@ const menuGroups = [
         ],
       },
       {
-        icon: DocsIcon,
-        name: "Peer Point",
-        path: "/peerpoint",
+        icon: CalenderIcon,
+        name: 'Student Time Table',
+        path: '/timetable',
+      },
+      {
+        icon: CalenderIcon,
+        name: 'Calendar',
+        path: '/calendar',
+      },
+      {
+        icon: UserCircleIcon,
+        name: 'User Profile',
+        path: '/profile',
+      },
+      {
+        name: 'Connect U',
+        icon: ListIcon,
         subItems: [
-          { name: "Document Printing", path: "/peerpoint/printing", pro: false },
-          { name: "Faculty Documents", path: "/peerpoint/documents", pro: false },
-          { name: "Faculty Stationery Kits", path: "/peerpoint/kits", pro: false },
+          { name: 'Mental Support', path: '/connect-u/mental-health', pro: false },
+          { name: 'Academic Support', path: '/connect-u/academic-support', pro: false },
+        ],
+      },
+      {
+        icon: DocsIcon,
+        name: 'Peer Point',
+        subItems: [
+          { name: 'Document Printing', path: '/peerpoint/printing', pro: false },
+          { name: 'Faculty Documents', path: '/peerpoint/documents', pro: false },
+          { name: 'Faculty Stationery Kits', path: '/peerpoint/kits', pro: false },
         ],
       },
       {
@@ -491,8 +524,8 @@ const startTransition = (el) => {
   el.style.height = 'auto'
   const height = el.scrollHeight
   el.style.height = '0px'
-  el.offsetHeight // force reflow
-  el.style.height = height + 'px'
+  el.offsetHeight
+  el.style.height = `${height}px`
 }
 
 const endTransition = (el) => {
