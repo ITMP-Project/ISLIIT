@@ -19,7 +19,26 @@ export async function listKuppiSessions(req, res, next) {
       .sort({ date: 1, time: 1, createdAt: -1 })
       .limit(100)
       .toArray();
-    res.json(sessions);
+    
+    // Calculate status based on current date and session date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const sessionsWithStatus = sessions.map(session => {
+      const sessionDate = new Date(session.date);
+      sessionDate.setHours(0, 0, 0, 0);
+      
+      let status = "UPCOMING";
+      if (sessionDate < today) {
+        status = "PASSED";
+      } else if (sessionDate.getTime() === today.getTime()) {
+        status = "ONGOING";
+      }
+      
+      return { ...session, status };
+    });
+    
+    res.json(sessionsWithStatus);
   } catch (error) {
     next(error);
   }
@@ -43,7 +62,20 @@ export async function getKuppiSession(req, res, next) {
       return;
     }
 
-    res.json(session);
+    // Calculate status based on current date and session date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sessionDate = new Date(session.date);
+    sessionDate.setHours(0, 0, 0, 0);
+    
+    let status = "UPCOMING";
+    if (sessionDate < today) {
+      status = "PASSED";
+    } else if (sessionDate.getTime() === today.getTime()) {
+      status = "ONGOING";
+    }
+
+    res.json({ ...session, status });
   } catch (error) {
     next(error);
   }
@@ -57,9 +89,22 @@ export async function createKuppiSession(req, res, next) {
       return;
     }
 
+    // Calculate status based on session date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sessionDate = new Date(value.date);
+    sessionDate.setHours(0, 0, 0, 0);
+    
+    let status = "UPCOMING";
+    if (sessionDate < today) {
+      status = "PASSED";
+    } else if (sessionDate.getTime() === today.getTime()) {
+      status = "ONGOING";
+    }
+
     const session = {
       ...value,
-      status: "UPCOMING",
+      status,
       createdAt: new Date(),
     };
 

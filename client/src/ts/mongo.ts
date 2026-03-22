@@ -56,8 +56,11 @@ export type MongoKuppiSession = {
   title: string;
   description: string;
   subject: string;
+  year: string;
+  semester: string;
   date: string;
   time: string;
+  duration: string;
   teamsLink: string;
   createdBy: string;
   status: string;

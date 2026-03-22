@@ -2,8 +2,11 @@ const kuppiSessionFields = [
   "title",
   "description",
   "subject",
+  "year",
+  "semester",
   "date",
   "time",
+  "duration",
   "teamsLink",
   "createdBy",
 ];

@@ -59,8 +59,26 @@
         <div class="h-2 bg-gradient-to-r from-brand-400 to-brand-600"></div>
         <div class="p-5">
           <!-- Status Badge -->
-          <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-400 mb-3">
-            <span class="w-1.5 h-1.5 rounded-full bg-success-500 animate-pulse"></span>
+          <span 
+            :class="[
+              'inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-3',
+              session.status === 'UPCOMING' 
+                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                : session.status === 'ONGOING'
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-400'
+                : 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+            ]"
+          >
+            <span 
+              :class="[
+                'w-1.5 h-1.5 rounded-full',
+                session.status === 'UPCOMING' 
+                  ? 'bg-blue-500'
+                  : session.status === 'ONGOING'
+                  ? 'bg-success-500 animate-pulse'
+                  : 'bg-gray-400'
+              ]"
+            ></span>
             {{ session.status }}
           </span>
 
@@ -78,6 +96,12 @@
           <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <div class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17c0 5.523 4.477 10 10 10s10-4.477 10-10c0-6.002-4.5-10.747-10-10.747z" />
+              </svg>
+              {{ session.year }} • {{ session.semester }}
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {{ formatDate(session.date) }}
@@ -86,7 +110,7 @@
               <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {{ session.time }}
+              {{ session.time }} • {{ session.duration }}
             </div>
             <div class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,8 +199,38 @@
               />
             </div>
 
-            <!-- Date & Time row -->
+            <!-- Year & Semester row -->
             <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Year <span class="text-error-500">*</span>
+                </label>
+                <input
+                  id="kuppi-year"
+                  v-model="form.year"
+                  type="text"
+                  placeholder="e.g. Year 2"
+                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Semester <span class="text-error-500">*</span>
+                </label>
+                <input
+                  id="kuppi-semester"
+                  v-model="form.semester"
+                  type="text"
+                  placeholder="e.g. Semester 1"
+                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Date, Time & Duration row -->
+            <div class="grid grid-cols-3 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Date <span class="text-error-500">*</span>
@@ -197,6 +251,19 @@
                   id="kuppi-time"
                   v-model="form.time"
                   type="time"
+                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Duration <span class="text-error-500">*</span>
+                </label>
+                <input
+                  id="kuppi-duration"
+                  v-model="form.duration"
+                  type="text"
+                  placeholder="e.g. 1.5 hours"
                   class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
                   required
                 />
@@ -264,8 +331,11 @@ const blankForm = () => ({
   title: "",
   description: "",
   subject: "",
+  year: "",
+  semester: "",
   date: "",
   time: "",
+  duration: "",
   teamsLink: "",
 });
 
