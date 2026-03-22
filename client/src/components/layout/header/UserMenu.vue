@@ -1,74 +1,123 @@
 <template>
   <div class="relative" ref="dropdownRef">
     <button
-      class="flex items-center text-gray-700 dark:text-gray-400"
+      class="flex items-center gap-3 rounded-full px-2 py-1 text-gray-700 transition
+             hover:bg-gray-100 focus:outline-none focus-visible:ring-2
+             focus-visible:ring-brand-500 dark:text-gray-300 dark:hover:bg-white/5"
+      type="button"
+      aria-haspopup="menu"
+      :aria-expanded="dropdownOpen"
       @click.prevent="toggleDropdown"
     >
-      <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-        <img src="/images/user/owner.jpg" alt="User" />
+      <span
+        class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-500
+               text-sm font-semibold text-white shadow-sm"
+      >
+        {{ userInitials }}
       </span>
 
-      <span class="block mr-1 font-medium text-theme-sm">Musharof </span>
-
-      <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
+      <div class="flex items-center gap-1">
+        <span class="block max-w-[120px] truncate font-medium text-theme-sm">
+          {{ authUser?.username || 'User' }}
+        </span>
+        <ChevronDownIcon
+          class="h-4 w-4 transition-transform duration-200"
+          :class="{ 'rotate-180': dropdownOpen }"
+        />
+      </div>
     </button>
 
-    <!-- Dropdown Start -->
-    <div
-      v-if="dropdownOpen"
-      class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
+    <transition
+      enter-active-class="transition ease-out duration-150"
+      enter-from-class="opacity-0 translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-1"
     >
-      <div>
-        <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-          Musharof Chowdhury
-        </span>
-        <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-          randomuser@pimjo.com
-        </span>
-      </div>
-
-      <ul class="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-        <li v-for="item in menuItems" :key="item.href">
-          <router-link
-            :to="item.href"
-            class="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          >
-            <!-- SVG icon would go here -->
-            <component
-              :is="item.icon"
-              class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-            />
-            {{ item.text }}
-          </router-link>
-        </li>
-      </ul>
-      <router-link
-        to="/signin"
-        @click="signOut"
-        class="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+      <div
+        v-if="dropdownOpen"
+        class="absolute right-0 mt-3 w-[260px] rounded-2xl border border-gray-200
+               bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
+        role="menu"
       >
-        <LogoutIcon
-          class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-        />
-        Sign out
-      </router-link>
-    </div>
-    <!-- Dropdown End -->
+        <div class="flex items-center gap-3 border-b border-gray-200 px-2 pb-3 dark:border-gray-800">
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500
+                   text-xs font-semibold text-white"
+          >
+            {{ userInitials }}
+          </span>
+          <div class="space-y-1">
+            <span class="block text-theme-sm font-medium text-gray-800 dark:text-white">
+              {{ authUser?.username || 'User' }}
+            </span>
+            <div class="flex flex-wrap gap-1.5">
+              <span
+                v-for="chip in roleChips"
+                :key="chip.label"
+                class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
+                :class="chip.class"
+              >
+                {{ chip.label }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <ul class="mt-3 flex flex-col gap-1">
+          <li v-for="item in menuItems" :key="item.href">
+            <router-link
+              :to="item.href"
+              class="group flex items-center gap-3 rounded-xl px-3 py-2 text-theme-sm font-medium
+                     text-gray-700 transition hover:bg-gray-100 hover:text-gray-900
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
+                     dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white"
+              role="menuitem"
+              @click="closeDropdown"
+            >
+              <component
+                :is="item.icon"
+                class="h-5 w-5 text-gray-400 transition group-hover:text-gray-700
+                       dark:text-gray-500 dark:group-hover:text-gray-300"
+              />
+              <span>{{ item.text }}</span>
+            </router-link>
+          </li>
+        </ul>
+
+        <button
+          type="button"
+          class="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2 text-theme-sm font-medium
+                 text-red-600 transition hover:bg-red-50 focus-visible:outline-none
+                 focus-visible:ring-2 focus-visible:ring-red-500 dark:text-red-400
+                 dark:hover:bg-red-500/10"
+          @click="handleSignOut"
+          role="menuitem"
+        >
+          <LogoutIcon class="h-5 w-5" />
+          <span>Sign out</span>
+        </button>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChevronDownIcon, InfoCircleIcon, LogoutIcon, SettingsIcon, UserCircleIcon } from '@/icons'
+import { ChevronDownIcon, LogoutIcon, UserCircleIcon } from '@/icons'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useAuthUser } from '@/composables/useAuthUser'
+
+const router = useRouter()
 
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
+const { authUser, userInitials, roleChips } = useAuthUser()
+
 const menuItems = [
-  { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
-  { href: '/profile', icon: SettingsIcon, text: 'Account settings' },
-  { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
+  { href: '/profile', icon: UserCircleIcon, text: 'Profile' },
 ]
 
 const toggleDropdown = () => {
@@ -79,37 +128,40 @@ const closeDropdown = () => {
   dropdownOpen.value = false
 }
 
-const signOut = () => {
+const handleSignOut = async () => {
   const userStr = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
+
   if (userStr) {
     try {
       const user = JSON.parse(userStr)
-      const auth_user_id = user.id || user._id;
-      const student_id = user.username;
-      
+      const auth_user_id = user.id || user._id
+      const student_id = user.username
+
       if (auth_user_id || student_id) {
         const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+
         fetch(`${apiUrl}/api/p-helper/presence/update`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-              availability_status: 'offline',
-              auth_user_id,
-              student_id
-          })
+          body: JSON.stringify({
+            availability_status: 'offline',
+            auth_user_id,
+            student_id,
+          }),
         }).catch(() => {})
       }
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error('Sign out error:', error)
     }
   }
 
   localStorage.removeItem('authUser')
   sessionStorage.removeItem('authUser')
   closeDropdown()
+  await router.push('/signin')
 }
 
-const handleClickOutside = (event: Event) => {
+const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     closeDropdown()
   }
