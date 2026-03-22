@@ -33,16 +33,16 @@ const router = createRouter({
     return savedPosition || { left: 0, top: 0 }
   },
   routes: [
-    {
-      path: '/',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
-      meta: { title: 'eCommerce Dashboard' },
-    },
+    // {
+    //   path: '/',
+    //   name: 'Ecommerce',
+    //   component: () => import('../views/Ecommerce.vue'),
+    //   meta: { title: 'eCommerce Dashboard' },
+    // },
 
     // Student
     {
-      path: '/student-dashboard',
+      path: '/',
       name: 'StudentDashboard',
       component: () => import('../views/Student/StudentDashboard.vue'),
       meta: { title: 'Student Dashboard' },
