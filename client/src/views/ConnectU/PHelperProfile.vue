@@ -39,13 +39,9 @@
           </div>
 
           <div class="flex gap-3 justify-center border-t border-gray-100 dark:border-gray-700 pt-6">
-             <button class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 flex-1">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-               Contact
-             </button>
-             <button class="px-5 py-2.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white font-medium rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-center gap-2 flex-1">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-               Book
+             <button v-if="!isSelf" @click="startConsultation" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 w-full shadow-sm shadow-brand-500/20">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+               Consult
              </button>
           </div>
         </div>
@@ -77,16 +73,35 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 
 const route = useRoute();
+const router = useRouter();
 const currentPageTitle = ref("Helper Profile");
 
 const helper = ref(null);
 const loading = ref(true);
 const error = ref(null);
+const isSelf = ref(false);
+
+const checkIsSelf = () => {
+    if (!helper.value) return;
+    const userStr = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+    if (userStr) {
+        try {
+            const u = JSON.parse(userStr);
+            const loggedInId = String(u.id || u._id);
+            const loggedInUsername = String(u.username);
+            
+            isSelf.value = 
+                String(helper.value.auth_user_id) === loggedInId || 
+                String(helper.value.student_id) === loggedInId ||
+                String(helper.value.student_id) === loggedInUsername;
+        } catch(e) {}
+    }
+};
 
 const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -135,7 +150,50 @@ onMounted(async () => {
       error.value = "Helper not found";
     }
   } finally {
+    checkIsSelf();
     loading.value = false;
   }
 });
+
+const startConsultation = async () => {
+    const userStr = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+    let studentId = '';
+    if(userStr) {
+        try { 
+            const u = JSON.parse(userStr); 
+            studentId = u.id || u._id;
+        } catch(e){}
+    }
+    
+    if (!studentId) {
+        let mockId = localStorage.getItem('mockUserId');
+        if (!mockId) {
+            mockId = `USER-${Date.now()}`;
+            localStorage.setItem('mockUserId', mockId);
+        }
+        studentId = mockId;
+    }
+
+    // Ensure we are using the _id for the helper
+    const payload = {
+       student_id: studentId,
+       helper_id: helper.value._id || helper.value.id
+    };
+
+    try {
+        const res = await fetch(`${apiUrl}/api/chat/conversations`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        if(res.ok) {
+           const convo = await res.json();
+           router.push(`/connect-u/chat/${convo._id}`);
+        } else {
+           alert("Failed to start consultation");
+        }
+    } catch(err) {
+        alert("Error starting consultation: " + err.message);
+    }
+};
 </script>

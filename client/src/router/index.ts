@@ -55,6 +55,38 @@ const router = createRouter({
       },
     },
     {
+      path: "/connect-u/mental-health/apply",
+      name: "Become a Helper",
+      component: () => import("../views/ConnectU/BecomeHelper.vue"),
+      meta: {
+        title: "Become a Helper",
+      },
+    },
+    {
+      path: "/connect-u/mental-health/admin",
+      name: "Admin Validate Helpers",
+      component: () => import("../views/ConnectU/AdminHelperValidation.vue"),
+      meta: {
+        title: "Admin Validation",
+      },
+    },
+    {
+      path: "/connect-u/chat/:conversationId",
+      name: "Chat Consultation",
+      component: () => import("../views/ConnectU/ChatView.vue"),
+      meta: {
+        title: "Consultation",
+      },
+    },
+    {
+      path: "/connect-u/messages",
+      name: "Chat Inbox",
+      component: () => import("../views/ConnectU/ChatInbox.vue"),
+      meta: {
+        title: "My Messages",
+      },
+    },
+    {
       path: "/connect-u/mental-health/:id",
       name: "Psychological Helper Profile",
       component: () => import("../views/ConnectU/PHelperProfile.vue"),

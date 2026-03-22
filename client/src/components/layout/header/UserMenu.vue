@@ -80,6 +80,30 @@ const closeDropdown = () => {
 }
 
 const signOut = () => {
+  const userStr = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr)
+      const auth_user_id = user.id || user._id;
+      const student_id = user.username;
+      
+      if (auth_user_id || student_id) {
+        const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+        fetch(`${apiUrl}/api/p-helper/presence/update`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+              availability_status: 'offline',
+              auth_user_id,
+              student_id
+          })
+        }).catch(() => {})
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   localStorage.removeItem('authUser')
   sessionStorage.removeItem('authUser')
   closeDropdown()

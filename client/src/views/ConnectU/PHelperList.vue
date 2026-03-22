@@ -3,6 +3,15 @@
     <PageBreadcrumb :pageTitle="currentPageTitle" />
     <div class="space-y-5 sm:space-y-6">
       
+      <div class="flex justify-end gap-3 flex-wrap">
+        <router-link to="/connect-u/messages" class="px-5 py-2.5 bg-brand-50 dark:bg-brand-500/10 hover:bg-brand-100 dark:hover:bg-brand-500/20 text-brand-600 dark:text-brand-400 font-medium rounded-lg transition-colors text-sm flex items-center justify-center gap-2 border border-brand-200 dark:border-brand-500/30">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" /></svg>
+           My Inbox
+        </router-link>
+        <router-link v-if="!hasApplication && !isAdmin" to="/connect-u/mental-health/apply" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg shadow-sm transition-colors text-sm flex items-center justify-center">Become a Helper</router-link>
+        <router-link v-if="isAdmin" to="/connect-u/mental-health/admin" class="px-5 py-2.5 bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white font-medium rounded-lg shadow-sm transition-colors text-sm flex items-center justify-center">Admin Validation</router-link>
+      </div>
+
       <div v-if="loading" class="flex justify-center py-10">
         <!-- Spinner -->
         <svg class="animate-spin h-8 w-8 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -66,10 +75,30 @@ const currentPageTitle = ref("Mental Health Support Providers");
 const helpers = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const isAdmin = ref(false);
+const hasApplication = ref(false);
 
 const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 onMounted(async () => {
+  // Check if user is admin
+  try {
+     const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+     if (raw) {
+       const user = JSON.parse(raw);
+       // determine admin
+       const roles = Array.isArray(user?.roles) ? user.roles : (user?.role ? [user.role] : []);
+       isAdmin.value = roles.some(role => String(role).toLowerCase() === "admin");
+       
+       // check if this user has already applied
+       if (!isAdmin.value) {
+          const userId = user.id || user._id || '';
+          fetch(`${apiUrl}/api/p-helper/status/user/${userId}`).then(r => r.json()).then(data => {
+              if (data.hasApplication) hasApplication.value = true;
+          }).catch(console.error);
+       }
+     }
+  } catch(e) {}
   try {
     // Attempt to fetch from API
     // Using a try/catch so if backend isn't ready we fall back to mock data
