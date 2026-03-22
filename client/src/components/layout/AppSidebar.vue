@@ -292,10 +292,11 @@ const menuGroups = [
       },
 
       {
-        name: "Forms",
+        name: "Connect U",
         icon: ListIcon,
         subItems: [
-          { name: "Form Elements", path: "/form-elements", pro: false },
+          { name: "Mental Support", path: "/connect-u/mental-health", pro: false },
+          { name: "Academic Support", path: "/connect-u/academic-support", pro: false },
         ],
       },
       {

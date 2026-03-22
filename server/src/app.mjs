@@ -7,6 +7,8 @@ import timeTablesRouter from "./routes/timetables.mjs";
 import authRouter from "./routes/auth.mjs";
 import rolesRouter from "./routes/roles.mjs";
 import authUsersRouter from "./routes/auth-users.mjs";
+import pHelpersRouter from "./routes/p-helper.mjs";
+import chatRouter from "./routes/chat.mjs";
 
 const app = express();
 
@@ -24,6 +26,10 @@ app.use("/api/time-tables", timeTablesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/roles", rolesRouter);
 app.use("/api/auth-users", authUsersRouter);
+app.use("/api/p-helper", pHelpersRouter);
+app.use("/api/psychological-helpers", pHelpersRouter);
+app.use("/api/chat", chatRouter);
+
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

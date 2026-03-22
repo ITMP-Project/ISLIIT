@@ -14,7 +14,7 @@ const router = createRouter({
         title: "eCommerce Dashboard",
       },
     },
-     {
+    {
       path: "/timetable",
       name: "Student Time Table",
       component: () => import("../views/Others/StdCalendar.vue"),
@@ -44,6 +44,54 @@ const router = createRouter({
       component: () => import("../views/Forms/FormElements.vue"),
       meta: {
         title: "Form Elements",
+      },
+    },
+    {
+      path: "/connect-u/mental-health",
+      name: "Mental Health Support",
+      component: () => import("../views/ConnectU/PHelperList.vue"),
+      meta: {
+        title: "Mental Health Support",
+      },
+    },
+    {
+      path: "/connect-u/mental-health/apply",
+      name: "Become a Helper",
+      component: () => import("../views/ConnectU/BecomeHelper.vue"),
+      meta: {
+        title: "Become a Helper",
+      },
+    },
+    {
+      path: "/connect-u/mental-health/admin",
+      name: "Admin Validate Helpers",
+      component: () => import("../views/ConnectU/AdminHelperValidation.vue"),
+      meta: {
+        title: "Admin Validation",
+      },
+    },
+    {
+      path: "/connect-u/chat/:conversationId",
+      name: "Chat Consultation",
+      component: () => import("../views/ConnectU/ChatView.vue"),
+      meta: {
+        title: "Consultation",
+      },
+    },
+    {
+      path: "/connect-u/messages",
+      name: "Chat Inbox",
+      component: () => import("../views/ConnectU/ChatInbox.vue"),
+      meta: {
+        title: "My Messages",
+      },
+    },
+    {
+      path: "/connect-u/mental-health/:id",
+      name: "Psychological Helper Profile",
+      component: () => import("../views/ConnectU/PHelperProfile.vue"),
+      meta: {
+        title: "Helper Profile",
       },
     },
     {
@@ -84,6 +132,15 @@ const router = createRouter({
       component: () => import("../views/Tables/CommentsTable.vue"),
       meta: {
         title: "Comments Table",
+      },
+    },
+    {
+      path: "/role-management",
+      name: "Role Management",
+      component: () => import("../views/Admin/RoleManagement.vue"),
+      meta: {
+        title: "Role Management",
+        requiresAdmin: true,
       },
     },
     {
@@ -217,11 +274,11 @@ const isAdminUser = () => {
   const roles = Array.isArray(user?.roles)
     ? user.roles
     : Array.isArray(user?.role)
-    ? user.role
-    : user?.role
-    ? [user.role]
-    : [];
-  return roles.some((role) => String(role).toLowerCase() === "admin");
+      ? user.role
+      : user?.role
+        ? [user.role]
+        : [];
+  return roles.some((role: any) => String(role).toLowerCase() === "admin");
 };
 
 router.beforeEach((to, from, next) => {

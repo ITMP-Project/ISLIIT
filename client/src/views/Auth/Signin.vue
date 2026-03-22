@@ -254,6 +254,24 @@ const handleSubmit = async () => {
       const otherStorage = rememberMe.value ? sessionStorage : localStorage
       storage.setItem('authUser', JSON.stringify(data))
       otherStorage.removeItem('authUser')
+
+      const auth_user_id = data.id || data._id;
+      const student_id = data.username;
+      if (auth_user_id || student_id) {
+         try {
+           await fetch(`${apiUrl}/api/p-helper/presence/update`, {
+             method: 'PATCH',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ 
+                 availability_status: 'online', 
+                 auth_user_id, 
+                 student_id 
+             })
+           });
+         } catch(e) {
+           console.error("Failed to set presence to online", e);
+         }
+      }
     }
 
     toast.success('Signed in successfully.')
