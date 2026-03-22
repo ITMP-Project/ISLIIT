@@ -3,6 +3,7 @@ import cors from "cors";
 import usersRouter from "./routes/users.mjs";
 import productsRouter from "./routes/products.mjs";
 import commentsRouter from "./routes/comments.mjs";
+import peerpointRouter from "./routes/peerpoint.mjs";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/comments", commentsRouter);
+app.use("/api/peerpoint", peerpointRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

@@ -248,6 +248,16 @@ const menuGroups = [
         subItems: [{ name: "Ecommerce", path: "/", pro: false }],
       },
       {
+        icon: DocsIcon,
+        name: "Peer Point",
+        path: "/peerpoint",
+        subItems: [
+          { name: "Document Printing", path: "/peerpoint/printing", pro: false },
+          { name: "Faculty Documents", path: "/peerpoint/documents", pro: false },
+          { name: "Faculty Stationery Kits", path: "/peerpoint/kits", pro: false },
+        ],
+      },
+      {
         icon: CalenderIcon,
         name: "Calendar",
         path: "/calendar",
