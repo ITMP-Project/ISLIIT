@@ -181,8 +181,6 @@
           </div>
         </div>
       </nav>
-
-      <SidebarWidget v-if="isExpanded || isHovered || isMobileOpen" />
     </div>
   </aside>
 </template>
@@ -205,7 +203,6 @@ import {
   PlugInIcon,
 } from '../../icons'
 
-import SidebarWidget from './SidebarWidget.vue'
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
 import { useSidebar } from '@/composables/useSidebar'
 
@@ -249,32 +246,35 @@ const menuGroups = [
           {
             icon: GridIcon,
             name: 'Student Dashboard',
-            path: '/student-dashboard',
-            pro: false,
-          },
-          {
-            icon: GridIcon,
-            name: 'Ecommerce Overview',
             path: '/',
             pro: false,
           },
+          {
+            icon: UserCircleIcon,
+            name: 'My Timetable',
+            path: '/my-module-timetable',
+            pro: false,
+          },
+          // {
+          //   icon: CalenderIcon,
+          //   name: 'Student Time Table',
+          //   path: '/timetable',
+          // },
+          // {
+          //   icon: GridIcon,
+          //   name: 'Ecommerce Overview',
+          //   path: '/',
+          //   pro: false,
+          // },
         ],
       },
-      {
-        icon: CalenderIcon,
-        name: 'Student Time Table',
-        path: '/timetable',
-      },
-      {
-        icon: CalenderIcon,
-        name: 'Calendar',
-        path: '/calendar',
-      },
-      {
-        icon: UserCircleIcon,
-        name: 'User Profile',
-        path: '/profile',
-      },
+
+      // {
+      //   icon: CalenderIcon,
+      //   name: 'Calendar',
+      //   path: '/calendar',
+      // },
+      
       {
         name: 'Connect U',
         icon: ListIcon,
@@ -315,30 +315,25 @@ const menuGroups = [
         icon: UserCircleIcon,
         name: 'Student Management',
         subItems: [
-          {
-            icon: UserCircleIcon,
-            name: 'My Timetable',
-            path: '/my-module-timetable',
-            pro: false,
-          },
+          
           {
             icon: UserCircleIcon,
             name: 'My Modules',
             path: '/my-modules',
             pro: false,
           },
-          {
-            icon: CalenderIcon,
-            name: 'Calendar',
-            path: '/calendar',
-            pro: false,
-          },
-          {
-            icon: UserCircleIcon,
-            name: 'Profile',
-            path: '/profile',
-            pro: false,
-          },
+          // {
+          //   icon: CalenderIcon,
+          //   name: 'Calendar',
+          //   path: '/calendar',
+          //   pro: false,
+          // },
+          // {
+          //   icon: UserCircleIcon,
+          //   name: 'Profile',
+          //   path: '/profile',
+          //   pro: false,
+          // },
         ],
       },
       {
@@ -367,133 +362,139 @@ const menuGroups = [
           },
         ],
       },
-      {
-        name: 'Forms',
-        icon: ListIcon,
-        subItems: [
-          {
-            icon: ListIcon,
-            name: 'Form Elements',
-            path: '/form-elements',
-            pro: false,
-          },
-        ],
+        {
+        icon: UserCircleIcon,
+        name: 'User Profile',
+        path: '/profile',
       },
-      {
-        name: 'Tables',
-        icon: TableIcon,
-        subItems: [
-          {
-            icon: TableIcon,
-            name: 'Basic Tables',
-            path: '/basic-tables',
-            pro: false,
-          },
-        ],
-      },
-      {
-        name: 'Pages',
-        icon: PageIcon,
-        subItems: [
-          {
-            icon: PageIcon,
-            name: 'Blank Page',
-            path: '/blank',
-            pro: false,
-          },
-          {
-            icon: PageIcon,
-            name: '404 Page',
-            path: '/error-404',
-            pro: false,
-          },
-        ],
-      },
+    
+      // {
+      //   name: 'Forms',
+      //   icon: ListIcon,
+      //   subItems: [
+      //     {
+      //       icon: ListIcon,
+      //       name: 'Form Elements',
+      //       path: '/form-elements',
+      //       pro: false,
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'Tables',
+      //   icon: TableIcon,
+      //   subItems: [
+      //     {
+      //       icon: TableIcon,
+      //       name: 'Basic Tables',
+      //       path: '/basic-tables',
+      //       pro: false,
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'Pages',
+      //   icon: PageIcon,
+      //   subItems: [
+      //     {
+      //       icon: PageIcon,
+      //       name: 'Blank Page',
+      //       path: '/blank',
+      //       pro: false,
+      //     },
+      //     {
+      //       icon: PageIcon,
+      //       name: '404 Page',
+      //       path: '/error-404',
+      //       pro: false,
+      //     },
+      //   ],
+      // },
     ],
   },
-  {
-    title: 'Others',
-    items: [
-      {
-        icon: PieChartIcon,
-        name: 'Charts',
-        subItems: [
-          {
-            icon: PieChartIcon,
-            name: 'Line Chart',
-            path: '/line-chart',
-            pro: false,
-          },
-          {
-            icon: PieChartIcon,
-            name: 'Bar Chart',
-            path: '/bar-chart',
-            pro: false,
-          },
-        ],
-      },
-      {
-        icon: BoxCubeIcon,
-        name: 'UI Elements',
-        subItems: [
-          {
-            icon: BoxCubeIcon,
-            name: 'Alerts',
-            path: '/alerts',
-            pro: false,
-          },
-          {
-            icon: BoxCubeIcon,
-            name: 'Avatars',
-            path: '/avatars',
-            pro: false,
-          },
-          {
-            icon: BoxCubeIcon,
-            name: 'Badge',
-            path: '/badge',
-            pro: false,
-          },
-          {
-            icon: BoxCubeIcon,
-            name: 'Buttons',
-            path: '/buttons',
-            pro: false,
-          },
-          {
-            icon: BoxCubeIcon,
-            name: 'Images',
-            path: '/images',
-            pro: false,
-          },
-          {
-            icon: BoxCubeIcon,
-            name: 'Videos',
-            path: '/videos',
-            pro: false,
-          },
-        ],
-      },
-      {
-        icon: PlugInIcon,
-        name: 'Authentication',
-        subItems: [
-          {
-            icon: PlugInIcon,
-            name: 'Sign In',
-            path: '/signin',
-            pro: false,
-          },
-          {
-            icon: PlugInIcon,
-            name: 'Sign Up',
-            path: '/signup',
-            pro: false,
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   title: 'Others',
+  //   items: [
+  //     {
+  //       icon: PieChartIcon,
+  //       name: 'Charts',
+  //       subItems: [
+  //         {
+  //           icon: PieChartIcon,
+  //           name: 'Line Chart',
+  //           path: '/line-chart',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: PieChartIcon,
+  //           name: 'Bar Chart',
+  //           path: '/bar-chart',
+  //           pro: false,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       icon: BoxCubeIcon,
+  //       name: 'UI Elements',
+  //       subItems: [
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Alerts',
+  //           path: '/alerts',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Avatars',
+  //           path: '/avatars',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Badge',
+  //           path: '/badge',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Buttons',
+  //           path: '/buttons',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Images',
+  //           path: '/images',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: BoxCubeIcon,
+  //           name: 'Videos',
+  //           path: '/videos',
+  //           pro: false,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       icon: PlugInIcon,
+  //       name: 'Authentication',
+  //       subItems: [
+  //         {
+  //           icon: PlugInIcon,
+  //           name: 'Sign In',
+  //           path: '/signin',
+  //           pro: false,
+  //         },
+  //         {
+  //           icon: PlugInIcon,
+  //           name: 'Sign Up',
+  //           path: '/signup',
+  //           pro: false,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ]
 
 const isActive = (path) => route.path === path
