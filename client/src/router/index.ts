@@ -56,10 +56,10 @@ const router = createRouter({
     },
     {
       path: "/kuppi-sessions-duplicate",
-      name: "Kuppi Sessions Duplicate",
+      name: "KuppiSessionsDuplicate",
       component: () => import("../views/Tables/KuppiSessionsDuplicate.vue"),
       meta: {
-        title: "Kuppi Sessions Duplicate",
+        title: "Kuppi Sessions",
       },
     },
     {

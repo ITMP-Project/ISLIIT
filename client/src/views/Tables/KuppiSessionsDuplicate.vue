@@ -331,7 +331,7 @@ const { sessions, loading, error, fetchKuppiSessions, createKuppiSession } =
 const showModal = ref(false);
 const submitting = ref(false);
 const formError = ref<string | null>(null);
-const currentPageTitle = ref("Kuppi Sessions Duplicate");
+const currentPageTitle = ref("Kuppi Sessions");
 
 const blankForm = () => ({
   title: "",
