@@ -19,6 +19,16 @@
         <div class="flex items-center gap-2">
           <button
             type="button"
+            class="flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-[12px] font-medium text-brand-600 transition hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-brand-400 dark:hover:bg-gray-800 dark:hover:text-brand-300"
+            @click="showExportModal = true"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Send Timetable
+          </button>
+          <button
+            type="button"
             class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white p-2 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
             @click="showFilters = !showFilters"
             :aria-label="showFilters ? 'Hide filters' : 'Show filters'"
@@ -354,6 +364,51 @@
         </div>
       </template>
     </Modal>
+    <Modal v-if="showExportModal" @close="showExportModal = false">
+      <template #body>
+        <div class="no-scrollbar relative w-full max-w-[400px] overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Export Timetable
+            </h3>
+            <button
+              type="button"
+              class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              @click="showExportModal = false"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1.5">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select Range</span>
+              <select
+                v-model="exportPeriod"
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+              >
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+            
+            <button
+              type="button"
+              class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              @click="exportToPDF"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </template>
+    </Modal>
   </AdminLayout>
 </template>
 
@@ -363,6 +418,8 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
@@ -380,6 +437,9 @@ const { modules, fetchModulesForContext } = useUserModulesStore();
 const events = ref<ModuleEvent[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+const showExportModal = ref(false);
+const exportPeriod = ref<"today" | "week" | "month">("week");
 
 const showFilters = ref(true);
 const selectedModuleIds = ref<string[]>([]);
@@ -640,6 +700,90 @@ type CalendarEventApi = {
 
 const selectedEvent = ref<CalendarEventApi | null>(null);
 const isEventDetailsOpen = ref(false);
+
+const exportToPDF = () => {
+  const doc = new jsPDF();
+  
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let startDate = startOfToday;
+  let endDate = new Date(startOfToday.getTime());
+  
+  let periodLabel = "Today";
+
+  if (exportPeriod.value === "today") {
+    endDate.setDate(endDate.getDate() + 1);
+    periodLabel = "Today";
+  } else if (exportPeriod.value === "week") {
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
+    startDate = new Date(startDate.setDate(diff));
+    endDate = new Date(startDate.getTime());
+    endDate.setDate(endDate.getDate() + 7);
+    periodLabel = "This Week";
+  } else if (exportPeriod.value === "month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    periodLabel = "This Month";
+  }
+  
+  const selectedEvents = baseFilteredEvents.value.filter((evt) => {
+    const start = new Date(evt.startTime);
+    return start >= startDate && start < endDate;
+  });
+
+  selectedEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  
+  doc.setFontSize(18);
+  doc.text(`Timetable - ${periodLabel}`, 14, 22);
+  
+  if (authUser?.username) {
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Student: ${authUser.username}`, 14, 30);
+  }
+
+  const tableData = selectedEvents.map((evt) => {
+    const start = new Date(evt.startTime);
+    const end = evt.endTime ? new Date(evt.endTime) : null;
+    
+    // Format options for nice output
+    const timeOptions: Intl.DateTimeFormatOptions = { 
+        weekday: 'short', month: 'short', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit' 
+    };
+    const justTimeOptions: Intl.DateTimeFormatOptions = { 
+        hour: '2-digit', minute: '2-digit' 
+    };
+
+    const timeStr = end ? 
+      `${start.toLocaleString(undefined, timeOptions)} - ${end.toLocaleTimeString(undefined, justTimeOptions)}` : 
+      `${start.toLocaleString(undefined, timeOptions)}`;
+    
+    const mod = userModules.value.find((m) => String(m._id) === String(evt.module_id));
+    const moduleStr = mod ? `${mod.module_name} (Y${mod.year} S${mod.semester})` : "N/A";
+    
+    return [
+      timeStr,
+      evt.title || "Event",
+      moduleStr,
+      evt.type ? evt.type.charAt(0).toUpperCase() + evt.type.slice(1) : "Event"
+    ];
+  });
+  
+  autoTable(doc, {
+    startY: 36,
+    head: [["Time", "Event", "Module", "Type"]],
+    body: tableData,
+    theme: "grid",
+    headStyles: { fillColor: [66, 133, 244] },
+    alternateRowStyles: { fillColor: [245, 248, 250] },
+    margin: { top: 36 }
+  });
+  
+  doc.save(`Timetable_${periodLabel.replace(" ", "_")}.pdf`);
+  showExportModal.value = false;
+};
 
 const closeEventDetails = () => {
   isEventDetailsOpen.value = false;
