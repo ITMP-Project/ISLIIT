@@ -6,44 +6,83 @@
       <!-- Summary cards -->
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <ComponentCard title="Upcoming exams" className="shadow-none">
-          <div class="flex items-baseline justify-between text-sm">
-            <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-              {{ upcomingExamsCount }}
-            </p>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          <div class="flex items-start justify-between gap-3 text-sm">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="rounded-xl bg-red-50 p-2 text-red-700 dark:bg-red-900/40 dark:text-red-200">
+                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M3 9h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 9v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 13h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                  {{ upcomingExamsCount }}
+                </p>
+              </div>
+            </div>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
               next 30 days
             </p>
           </div>
         </ComponentCard>
 
         <ComponentCard title="Upcoming assessments" className="shadow-none">
-          <div class="flex items-baseline justify-between text-sm">
-            <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-              {{ upcomingAssessmentsCount }}
-            </p>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          <div class="flex items-start justify-between gap-3 text-sm">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="rounded-xl bg-amber-50 p-2 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
+                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                {{ upcomingAssessmentsCount }}
+              </p>
+            </div>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
               assignments / quizzes
             </p>
           </div>
         </ComponentCard>
 
         <ComponentCard title="Events this week" className="shadow-none">
-          <div class="flex items-baseline justify-between text-sm">
-            <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-              {{ thisWeekEventsCount }}
-            </p>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          <div class="flex items-start justify-between gap-3 text-sm">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="rounded-xl bg-blue-50 p-2 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
+                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M7 11h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7 15h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                {{ thisWeekEventsCount }}
+              </p>
+            </div>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
               lec / lab / exam
             </p>
           </div>
         </ComponentCard>
 
         <ComponentCard title="Past events" className="shadow-none" desc="Lectures / labs / exams already completed.">
-          <div class="flex items-baseline justify-between text-sm">
-            <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-              {{ pastEventsCount }}
-            </p>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          <div class="flex items-start justify-between gap-3 text-sm">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="rounded-xl bg-gray-50 p-2 text-gray-700 dark:bg-dark-900 dark:text-gray-200">
+                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                {{ pastEventsCount }}
+              </p>
+            </div>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
               since semester start
             </p>
           </div>
@@ -65,7 +104,7 @@
                     v-for="filter in quickFilters"
                     :key="filter.id"
                     type="button"
-                    class="inline-flex items-center gap-1 rounded-full border px-3 py-1 font-medium transition"
+                  class="inline-flex items-center gap-2 rounded-full border px-3 py-1 font-medium transition"
                     :class="
                       activeQuickFilter === filter.id
                         ? 'border-brand-500 bg-brand-500/10 text-brand-600 dark:border-brand-400 dark:text-brand-300'
@@ -73,6 +112,25 @@
                     "
                     @click="activeQuickFilter = filter.id"
                   >
+                  <svg v-if="filter.id === 'lec'" viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M4 19a2 2 0 0 0 2 2h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 2h12a2 2 0 0 1 2 2v17H6a2 2 0 0 0-2 2V4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <svg v-else-if="filter.id === 'lab'" viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M2 2h8l-1 6v5l5 6v1H7v-1l5-6v-5l-1-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2h8l-3 9v3l2 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg v-else-if="filter.id === 'assessment'" viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg v-else viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M7 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                     {{ filter.label }}
                   </button>
                 </div>
@@ -92,7 +150,13 @@
                   v-if="!upcomingList.length && !loading"
                   class="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                 >
-                  No upcoming events for the selected filter.
+                  <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    No upcoming events for the selected filter.
+                  </div>
                 </div>
 
                 <div
@@ -100,7 +164,53 @@
                   :key="evt._id"
                   class="flex items-start justify-between gap-3 rounded-lg border border-gray-100 bg-white px-3 py-2 text-xs shadow-sm transition hover:border-brand-200 dark:border-gray-800 dark:bg-gray-900"
                 >
-                  <div class="space-y-0.5">
+                  <div class="flex min-w-0 items-start gap-3">
+                    <div
+                      class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg"
+                      :class="evt.chipClass"
+                      aria-hidden="true"
+                    >
+                      <svg
+                        v-if="String(evt.type ?? '').toLowerCase() === 'lec'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M4 19a2 2 0 0 0 2 2h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M6 2h12a2 2 0 0 1 2 2v17H6a2 2 0 0 0-2 2V4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else-if="String(evt.type ?? '').toLowerCase() === 'lab'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M2 2h8l-1 6v5l5 6v1H7v-1l5-6v-5l-1-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else-if="String(evt.type ?? '').toLowerCase() === 'assessment'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M7 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="space-y-0.5 min-w-0">
                     <p class="font-semibold text-gray-800 dark:text-gray-100">
                       {{ evt.title }}
                     </p>
@@ -112,6 +222,7 @@
                     <p class="text-[11px] text-gray-500 dark:text-gray-400">
                       {{ evt.whenLabel }}
                     </p>
+                    </div>
                   </div>
                   <span
                     class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
@@ -136,7 +247,13 @@
                   v-if="!nearDeadlineList.length && !loading"
                   class="rounded-lg border border-dashed border-amber-200 bg-amber-50 px-3 py-3 text-[11px] text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
                 >
-                  No deadlines in the next 7 days.
+                  <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    No deadlines in the next 7 days.
+                  </div>
                 </div>
 
                 <div
@@ -144,15 +261,46 @@
                   :key="evt._id"
                   class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200"
                 >
-                  <p class="font-medium">
-                    {{ evt.title }}
-                  </p>
-                  <p class="mt-0.5 text-[11px]">
-                    {{ evt.whenLabel }} • {{ evt.moduleLabel }}
-                  </p>
-                  <p class="mt-0.5 font-medium">
-                    Due {{ evt.timeUntil }}
-                  </p>
+                  <div class="flex items-start gap-3">
+                    <div
+                      class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg"
+                      :class="evt.chipClass"
+                      aria-hidden="true"
+                    >
+                      <svg
+                        v-if="String(evt.type ?? '').toLowerCase() === 'exam'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M7 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="font-medium truncate">
+                        {{ evt.title }}
+                      </p>
+                      <p class="mt-0.5 text-[11px] truncate">
+                        {{ evt.whenLabel }} • {{ evt.moduleLabel }}
+                      </p>
+                      <p class="mt-0.5 font-medium">
+                        Due {{ evt.timeUntil }}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </template>
@@ -168,7 +316,13 @@
                   v-if="!recentPastList.length && !loading"
                   class="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-3 py-3 text-[11px] text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                 >
-                  No events in the last 7 days.
+                  <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    No events in the last 7 days.
+                  </div>
                 </div>
 
                 <div
@@ -176,15 +330,65 @@
                   :key="evt._id"
                   class="rounded-lg border border-gray-100 bg-white px-3 py-2 text-[11px] text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200"
                 >
-                  <p class="font-medium">
-                    {{ evt.title }}
-                  </p>
-                  <p class="mt-0.5">
-                    {{ evt.whenLabel }} • {{ evt.moduleLabel }}
-                  </p>
-                  <p class="mt-0.5 text-[11px] text-gray-500">
-                    {{ evt.timeUntil }}
-                  </p>
+                  <div class="flex items-start gap-3">
+                    <div
+                      class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg"
+                      :class="evt.chipClass"
+                      aria-hidden="true"
+                    >
+                      <svg
+                        v-if="String(evt.type ?? '').toLowerCase() === 'lec'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M4 19a2 2 0 0 0 2 2h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M6 2h12a2 2 0 0 1 2 2v17H6a2 2 0 0 0-2 2V4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else-if="String(evt.type ?? '').toLowerCase() === 'lab'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M2 2h8l-1 6v5l5 6v1H7v-1l5-6v-5l-1-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else-if="String(evt.type ?? '').toLowerCase() === 'assessment'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <svg
+                        v-else
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M7 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="font-medium truncate">
+                        {{ evt.title }}
+                      </p>
+                      <p class="mt-0.5 truncate">
+                        {{ evt.whenLabel }} • {{ evt.moduleLabel }}
+                      </p>
+                      <p class="mt-0.5 text-[11px] text-gray-500 truncate">
+                        {{ evt.timeUntil }}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </template>
@@ -230,7 +434,7 @@ const readAuthUser = (): AuthUser | null => {
   if (!raw) return null;
   try {
     return JSON.parse(raw);
-  } catch (_err) {
+  } catch {
     return null;
   }
 };
@@ -340,6 +544,27 @@ const normalizeTypeLabel = (type: string | undefined) => {
   return "Event";
 };
 
+const normalizeEventType = (value: unknown): "lec" | "lab" | "assessment" | "exam" => {
+  const t = String(value ?? "").trim().toLowerCase();
+  if (t === "lec" || t === "lecture") return "lec";
+  if (t === "lab" || t === "practical") return "lab";
+  if (t === "assessment" || t === "assignment" || t === "quiz") return "assessment";
+  return "exam";
+};
+
+const parseMongoDateToIso = (value: unknown): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+
+  if (typeof value === "object") {
+    const maybe = value as Record<string, unknown>;
+    const raw = maybe.$date;
+    if (typeof raw === "string") return raw;
+  }
+
+  return "";
+};
+
 const chipClassForEvent = (evt: ModuleEvent) => {
   const t = String(evt.type ?? "").toLowerCase();
   if (t === "exam") {
@@ -415,8 +640,9 @@ const reload = async () => {
   error.value = null;
   try {
     if (authUser) {
+      type AuthUserWithSpecialization = AuthUser & { specialization_id?: string };
       await fetchModulesForContext({
-        specializationId: String((authUser as any)?.specialization_id ?? ""),
+        specializationId: String((authUser as AuthUserWithSpecialization)?.specialization_id ?? ""),
       });
     }
 
@@ -434,7 +660,27 @@ const reload = async () => {
 
     const collected = responses
       .flat()
-      .filter((item: any) => item && item.module_id && item.startTime) as ModuleEvent[];
+      .filter((item: unknown) => !!item && typeof item === "object")
+      .map((item: unknown) => item as Record<string, unknown>)
+      .map((rec) => {
+        const startIso = parseMongoDateToIso(rec.startTime);
+        const endIso = parseMongoDateToIso(rec.endTime);
+
+        const startTime = startIso || "";
+        const endTime = endIso || startTime;
+
+        return {
+          _id: typeof rec._id === "string" ? rec._id : undefined,
+          module_id: String(rec.module_id ?? ""),
+          title: String(rec.title ?? ""),
+          type: normalizeEventType(rec.type) as ModuleEvent["type"],
+          startTime,
+          endTime,
+          description: String(rec.description ?? ""),
+          createdBy: String(rec.createdBy ?? ""),
+        } satisfies ModuleEvent;
+      })
+      .filter((evt) => evt.module_id && evt.title && evt.startTime && evt.endTime);
 
     events.value = collected;
   } catch (err) {
