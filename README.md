@@ -1,4 +1,4 @@
-# TailAdmin Vue.js Dashboard
+# TailAdmin ISLIIT Dashboard
 
 This repo is split into two parts:
 
