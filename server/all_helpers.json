@@ -1,0 +1,144 @@
+[
+  {
+    "_id": "69a9cf26c85507c0fe228130",
+    "student_id": "s124",
+    "bio": "Specialist in career counseling, life transitions, and mental well-being for college students.",
+    "profile_picture": "https://i.pravatar.cc/150?img=5",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T18:44:54.520Z"
+  },
+  {
+    "_id": "69a9cf2ec85507c0fe228132",
+    "student_id": "s123",
+    "bio": "Test bio",
+    "profile_picture": "https://i.pravatar.cc/150",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T18:45:02.446Z"
+  },
+  {
+    "_id": "69a9d519b51185685849107b",
+    "student_id": "ph102",
+    "bio": "Licensed Clinical Social Worker focusing on stress reduction, interpersonal relationships, and building resilience in high-pressure academic environments. Uses mindfulness-based cognitive therapy.",
+    "profile_picture": "https://i.pravatar.cc/150?img=11",
+    "availability_status": "busy",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T19:10:17.268Z"
+  },
+  {
+    "_id": "69a9d527b51185685849107d",
+    "student_id": "ph104",
+    "bio": "Psychiatrist and therapist offering support for ADHD management, neurodivergent students, and coping with perfectionism in STEM fields.",
+    "profile_picture": "https://i.pravatar.cc/150?img=68",
+    "availability_status": "offline",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T19:10:31.024Z"
+  },
+  {
+    "_id": "69a9d52ab51185685849107e",
+    "student_id": "ph105",
+    "bio": "Specialist in dealing with grief, trauma recovery, and family dynamic issues that impact academic performance. Safe space for LGBTQ+ students.",
+    "profile_picture": "https://i.pravatar.cc/150?img=43",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T19:10:34.510Z"
+  },
+  {
+    "_id": "69a9d52eb51185685849107f",
+    "student_id": "ph101",
+    "bio": "Clinical psychologist specializing in academic anxiety, depression, and time management strategies for university students. 12+ years of experience helping students transition to college life.",
+    "profile_picture": "https://i.pravatar.cc/150?img=47",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2026-03-05T19:10:38.584Z"
+  },
+  {
+    "_id": "69a9d5dc78bac591461c099f",
+    "student_id": "ph101",
+    "name": "Dr. Olivia Bennett",
+    "bio": "Clinical psychologist specializing in academic anxiety, depression, and time management strategies for university students. 12+ years of experience helping students transition to college life.",
+    "profile_picture": "https://i.pravatar.cc/150?img=47",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2024-03-06T00:00:00.000Z"
+  },
+  {
+    "_id": "69a9d5dc78bac591461c09a0",
+    "student_id": "ph102",
+    "name": "Marcus Reynolds, LCSW",
+    "bio": "Licensed Clinical Social Worker focusing on stress reduction, interpersonal relationships, and building resilience in high-pressure academic environments. Uses mindfulness-based cognitive therapy.",
+    "profile_picture": "https://i.pravatar.cc/150?img=11",
+    "availability_status": "busy",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2024-03-06T00:00:00.000Z"
+  },
+  {
+    "_id": "69a9d5dc78bac591461c09a1",
+    "student_id": "ph103",
+    "name": "Sarah Jenks, MA",
+    "bio": "Counselor with expertise in career anxiety, identity development, and coping with imposter syndrome among first-generation college students.",
+    "profile_picture": "https://i.pravatar.cc/150?img=32",
+    "availability_status": "active",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2024-03-06T00:00:00.000Z"
+  },
+  {
+    "_id": "69a9d5dc78bac591461c09a2",
+    "student_id": "ph104",
+    "name": "Dr. David Chen",
+    "bio": "Psychiatrist and therapist offering support for ADHD management, neurodivergent students, and coping with perfectionism in STEM fields.",
+    "profile_picture": "https://i.pravatar.cc/150?img=68",
+    "availability_status": "offline",
+    "verified_status": true,
+    "onboarding_status": "approved",
+    "created_at": "2024-03-06T00:00:00.000Z"
+  },
+  {
+    "_id": "69be6cf70b06e603e59acbc3",
+    "student_id": "16179012-f4c2-4f27-8a60-342d311572cd",
+    "name": "Minanga",
+    "bio": "testing",
+    "availability_status": "offline",
+    "onboarding_status": "approved",
+    "verified_status": false,
+    "created_at": "2026-03-21T10:03:35.093Z"
+  },
+  {
+    "_id": "69be71050fbefd7abaf76f3f",
+    "student_id": "IT231462766",
+    "name": "Vinod Weerasekara",
+    "bio": "I have been awarded deans list twice in my second year 1st semester and 3rd year 1st semester",
+    "onboarding_status": "approved",
+    "year_of_study": "3rd Year",
+    "contact_no": "076",
+    "why_select_you": "I want to improve my phsycological skills and be able to help students.",
+    "auth_user_id": "22215f9c-21c4-43d4-99c4-0cc81678a40d",
+    "availability_status": "offline",
+    "verified_status": false,
+    "created_at": "2026-03-21T10:20:53.320Z"
+  },
+  {
+    "_id": "69be735ab7057a25ecf147c7",
+    "student_id": "IT234567095",
+    "name": "Testing 123",
+    "bio": "Testing",
+    "onboarding_status": "pending",
+    "year_of_study": "3rd Year",
+    "contact_no": "0767896529",
+    "why_select_you": "Testing",
+    "auth_user_id": "0d18fe72-9e53-46bd-b644-65b7f2f6bac6",
+    "availability_status": "offline",
+    "verified_status": false,
+    "created_at": "2026-03-21T10:30:50.203Z"
+  }
+]
