@@ -315,7 +315,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
@@ -397,5 +397,9 @@ onMounted(fetchKuppiSessions);
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

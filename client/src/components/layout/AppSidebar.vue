@@ -241,6 +241,28 @@ const menuGroups = [
     items: [
       {
         icon: GridIcon,
+        name: "Dashboard",
+        subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+      },
+      {
+        icon: CalenderIcon,
+        name: "Student Time Table",
+        path: "/timetable",
+      },
+      {
+        icon: ChatIcon,
+        name: "Kuppi Sessions",
+        path: "/kuppi-sessions",
+      },
+      {
+        icon: CalenderIcon,
+        name: "Calendar",
+        path: "/calendar",
+      },
+      {
+        icon: UserCircleIcon,
+        name: "User Profile",
+        path: "/profile",
         name: 'Dashboard',
         subItems: [
           {
@@ -296,6 +318,11 @@ const menuGroups = [
         icon: GridIcon,
         name: 'Admin Management',
         subItems: [
+          { name: "Kuppi Sessions", path: "/kuppi-sessions-duplicate", pro: false },
+          { name: "Mongo Table", path: "/mongo-table", pro: false },
+          { name: "Users Table", path: "/users-table", pro: false },
+          { name: "Products Table", path: "/products-table", pro: false },
+          { name: "Comments Table", path: "/comments-table", pro: false },
           {
             icon: GridIcon,
             name: 'My Modules',

@@ -47,6 +47,27 @@ export type AuthUser = {
 }
 
 export type Role = {
+  _id?: string;
+  name: string;
+  createdAt?: string;
+};
+
+export type MongoKuppiSession = {
+  _id?: string;
+  title: string;
+  description: string;
+  subject: string;
+  year: string;
+  semester: string;
+  date: string;
+  time: string;
+  duration: string;
+  teamsLink: string;
+  createdBy: string;
+  status: string;
+  createdAt?: string;
+};
+
   _id?: string
   name: string
   createdAt?: string
