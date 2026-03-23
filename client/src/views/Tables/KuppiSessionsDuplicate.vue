@@ -1,11 +1,13 @@
 <template>
-  <div class="p-6">
-    <!-- Page Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kuppi Sessions</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Browse and join peer tutoring sessions</p>
-      </div>
+  <AdminLayout>
+    <PageBreadcrumb :pageTitle="currentPageTitle" />
+    <div class="p-6">
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kuppi Sessions</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Browse and join peer tutoring sessions</p>
+        </div>
       <button
         id="btn-create-kuppi"
         @click="showModal = true"
@@ -311,11 +313,14 @@
         </div>
       </div>
     </transition>
-  </div>
+    </div>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
+import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
+import AdminLayout from "@/components/layout/AdminLayout.vue";
 import { useRouter } from "vue-router";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
@@ -326,6 +331,7 @@ const { sessions, loading, error, fetchKuppiSessions, createKuppiSession } =
 const showModal = ref(false);
 const submitting = ref(false);
 const formError = ref<string | null>(null);
+const currentPageTitle = ref("Kuppi Sessions");
 
 const blankForm = () => ({
   title: "",
