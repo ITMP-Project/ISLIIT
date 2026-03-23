@@ -15,6 +15,7 @@ import modulesRouter from "./routes/modules.mjs";
 import peerpointRouter from "./routes/peerpoint.mjs";
 import pHelpersRouter from "./routes/p-helper.mjs";
 import chatRouter from "./routes/chat.mjs";
+import emailRouter from "./routes/email.mjs";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/peerpoint", peerpointRouter);
 app.use("/api/p-helper", pHelpersRouter);
 app.use("/api/psychological-helpers", pHelpersRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/email", emailRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

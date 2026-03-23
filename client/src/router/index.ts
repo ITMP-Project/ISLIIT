@@ -170,6 +170,12 @@ const router = createRouter({
       meta: { title: 'My Modules' },
     },
     {
+      path: '/modules/:moduleId/events',
+      name: 'ModuleEvents',
+      component: () => import('../views/Modules/ModuleEvents.vue'),
+      meta: { title: 'Module Events' },
+    },
+    {
       path: '/comments-table',
       name: 'CommentsTable',
       component: () => import('../views/Tables/CommentsTable.vue'),
@@ -323,7 +329,7 @@ const router = createRouter({
 
 /* ------------------------------ Navigation guard ----------------------------- */
 router.beforeEach((to, from, next) => {
-  document.title = `Vue.js ${to.meta.title || 'TailAdmin'} | TailAdmin`
+  document.title = `ISLIIT ${to.meta.title || ''} `
 
   const isPublicRoute = to.matched.some(record => record.meta.public === true)
   const hasUser = Boolean(readAuthUser())

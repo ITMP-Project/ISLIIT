@@ -202,7 +202,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
@@ -337,7 +337,7 @@ const submitCreate = async () => {
   }
 };
 
-onMounted(async () => {
+const loadModulePage = async () => {
   if (!moduleId.value) return;
 
   if (authUser) {
@@ -349,6 +349,8 @@ onMounted(async () => {
   if (isAllowed.value) {
     await fetchEvents(moduleId.value);
   }
-});
+};
+
+watch(moduleId, loadModulePage, { immediate: true });
 </script>
 
