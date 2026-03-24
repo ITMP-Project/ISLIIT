@@ -1,6 +1,9 @@
 const sessionParticipantFields = [
   "sessionId",
   "userId",
+  "studentId",
+  "year",
+  "semester",
 ];
 
 export function validateSessionParticipantPayload(payload, { partial = false } = {}) {
@@ -28,5 +31,9 @@ export function validateSessionParticipantPayload(payload, { partial = false } =
     }
   }
 
-  return { value, errors };
+  return { 
+    valid: errors.length === 0,
+    value, 
+    errors 
+  };
 }

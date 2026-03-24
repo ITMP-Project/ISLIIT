@@ -73,7 +73,10 @@ export function useKuppiSessionsStore() {
 
   const registerForSession = async (
     sessionId: string,
-    userId: string
+    userId: string,
+    studentId: string,
+    year: string,
+    semester: string
   ): Promise<boolean> => {
     isRegistering.value = true;
     registrationError.value = null;
@@ -82,7 +85,12 @@ export function useKuppiSessionsStore() {
       const response = await fetch(`${apiUrl}/api/kuppi-sessions/${sessionId}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: String(userId) }),
+        body: JSON.stringify({ 
+          userId: String(userId),
+          studentId: String(studentId),
+          year: String(year),
+          semester: String(semester)
+        }),
       });
 
       if (!response.ok) {

@@ -18,9 +18,13 @@ export async function registerForSession(req, res, next) {
       return;
     }
 
-    const userId = req.body.userId;
-    if (!userId) {
-      res.status(400).json({ error: "userId is required" });
+    // Validate payload with new fields
+    const { valid, errors, value } = validateSessionParticipantPayload({
+      ...req.body,
+      sessionId: sessionId.toString(),
+    });
+    if (!valid) {
+      res.status(400).json({ error: "Validation failed", details: errors });
       return;
     }
 
@@ -41,7 +45,7 @@ export async function registerForSession(req, res, next) {
       .collection("session_participants")
       .findOne({
         sessionId: sessionId,
-        userId: userId,
+        userId: value.userId,
       });
 
     if (existingParticipant) {
@@ -49,19 +53,25 @@ export async function registerForSession(req, res, next) {
       return;
     }
 
-    // Register user
+    // Register user with all fields
     const result = await db
       .collection("session_participants")
       .insertOne({
         sessionId: sessionId,
-        userId: userId,
+        userId: value.userId,
+        studentId: value.studentId,
+        year: value.year,
+        semester: value.semester,
         createdAt: new Date(),
       });
 
     res.status(201).json({
       _id: result.insertedId,
       sessionId: sessionId,
-      userId: userId,
+      userId: value.userId,
+      studentId: value.studentId,
+      year: value.year,
+      semester: value.semester,
       createdAt: new Date(),
     });
   } catch (error) {

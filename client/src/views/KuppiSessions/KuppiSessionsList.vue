@@ -339,6 +339,105 @@
         </div>
       </div>
     </transition>
+
+    <!-- ─── Registration Modal ─── -->
+    <transition name="fade">
+      <div
+        v-if="showRegistrationModal"
+        class="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        @click.self="closeRegistrationModal"
+      >
+        <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+          <!-- Modal Header -->
+          <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Register for Session</h2>
+            <button
+              @click="closeRegistrationModal"
+              class="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Modal Form -->
+          <form @submit.prevent="handleRegistrationFormSubmit" class="px-6 py-5 space-y-4">
+            <!-- Form Error -->
+            <div
+              v-if="registrationFormError"
+              class="px-4 py-3 rounded-lg bg-error-50 border border-error-200 text-error-700 text-sm dark:bg-error-900/20"
+            >
+              {{ registrationFormError }}
+            </div>
+
+            <!-- Student ID -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Student ID <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.studentId"
+                type="text"
+                placeholder="e.g. ST123456"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Year -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Year <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.year"
+                type="text"
+                placeholder="e.g. Year 2"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Semester -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Semester <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.semester"
+                type="text"
+                placeholder="e.g. Semester 1"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                @click="closeRegistrationModal"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="registrationFormSubmitting"
+                class="px-5 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+              >
+                <svg v-if="registrationFormSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+                {{ registrationFormSubmitting ? "Registering..." : "Register" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </transition>
     </div>
   </AdminLayout>
 </template>
@@ -370,6 +469,12 @@ const submitting = ref(false);
 const formError = ref<string | null>(null);
 const registering = ref<Record<string, boolean>>({});
 
+// Registration modal state
+const showRegistrationModal = ref(false);
+const registrationFormError = ref<string | null>(null);
+const selectedSessionForRegistration = ref<string | null>(null);
+const registrationFormSubmitting = ref(false);
+
 const blankForm = () => ({
   title: "",
   description: "",
@@ -382,7 +487,14 @@ const blankForm = () => ({
   teamsLink: "",
 });
 
+const blankRegistrationForm = () => ({
+  studentId: "",
+  year: "",
+  semester: "",
+});
+
 const form = reactive(blankForm());
+const registrationForm = reactive(blankRegistrationForm());
 
 const readAuthUser = () => {
   const raw =
@@ -441,12 +553,47 @@ const handleRegisterClick = async (e: Event, sessionId: string) => {
     return;
   }
 
-  registering.value[sessionId] = true;
-  const success = await registerForSession(sessionId, authUser._id);
-  registering.value[sessionId] = false;
+  selectedSessionForRegistration.value = sessionId;
+  showRegistrationModal.value = true;
+  registrationFormError.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
 
-  if (!success) {
-    alert(registrationError.value ?? "Failed to register. Please try again.");
+const closeRegistrationModal = () => {
+  showRegistrationModal.value = false;
+  registrationFormError.value = null;
+  selectedSessionForRegistration.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
+
+const handleRegistrationFormSubmit = async () => {
+  if (!registrationForm.studentId.trim() || !registrationForm.year.trim() || !registrationForm.semester.trim()) {
+    registrationFormError.value = "All fields are required";
+    return;
+  }
+
+  if (!selectedSessionForRegistration.value) return;
+
+  registrationFormSubmitting.value = true;
+  registrationFormError.value = null;
+
+  const authUser = readAuthUser();
+  const success = await registerForSession(
+    selectedSessionForRegistration.value,
+    authUser._id,
+    registrationForm.studentId.trim(),
+    registrationForm.year.trim(),
+    registrationForm.semester.trim()
+  );
+
+  registrationFormSubmitting.value = false;
+
+  if (success) {
+    closeRegistrationModal();
+    // Show success message
+    alert("Successfully registered for the session!");
+  } else {
+    registrationFormError.value = registrationError.value ?? "Failed to register. Please try again.";
   }
 };
 
