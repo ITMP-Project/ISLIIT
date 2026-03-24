@@ -228,8 +228,28 @@
         </div>
       </div>
 
-      <div v-if="loading" class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">
-        Loading module events...
+      <div v-if="loading" class="px-4 py-5">
+        <div class="mb-4 flex items-center justify-between">
+          <div class="flex gap-1.5">
+            <div class="h-8 w-8 animate-pulse rounded border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+            <div class="h-8 w-8 animate-pulse rounded border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+            <div class="h-8 w-16 animate-pulse rounded border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+          </div>
+          <div class="h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-800"></div>
+          <div class="flex">
+            <div class="h-8 w-16 animate-pulse rounded-l border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+            <div class="h-8 w-16 animate-pulse border-y border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+            <div class="h-8 w-16 animate-pulse rounded-r border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-800"></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-7 gap-[1px] rounded-lg border border-gray-200 bg-gray-200 p-[1px] dark:border-gray-800 dark:bg-gray-800">
+          <div v-for="i in 7" :key="'h-'+i" class="h-8 bg-white dark:bg-gray-900"></div>
+          <div v-for="i in 35" :key="'c-'+i" class="min-h-[100px] bg-white p-2 dark:bg-gray-900">
+            <div class="h-4 w-6 animate-pulse rounded bg-gray-100 dark:bg-gray-800"></div>
+            <div v-if="i % 5 === 0" class="mt-2 h-5 w-full animate-pulse rounded bg-brand-500/10 dark:bg-brand-500/20"></div>
+            <div v-if="i % 8 === 0" class="line-clamp-1 mt-1 h-5 w-full animate-pulse rounded bg-amber-500/10 dark:bg-amber-500/20"></div>
+          </div>
+        </div>
       </div>
       <div v-else-if="error" class="px-4 py-3 text-xs text-error-600 dark:text-error-400">
         {{ error }}

@@ -18,7 +18,8 @@
                 </svg>
               </div>
               <div class="min-w-0">
-                <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                <div v-if="loading && !events.length" class="h-9 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 mt-1"></div>
+                <p v-else class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
                   {{ upcomingExamsCount }}
                 </p>
               </div>
@@ -38,7 +39,8 @@
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              <div v-if="loading && !events.length" class="h-9 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 mt-1"></div>
+              <p v-else class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
                 {{ upcomingAssessmentsCount }}
               </p>
             </div>
@@ -59,7 +61,8 @@
                   <path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              <div v-if="loading && !events.length" class="h-9 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 mt-1"></div>
+              <p v-else class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
                 {{ thisWeekEventsCount }}
               </p>
             </div>
@@ -78,7 +81,8 @@
                   <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              <p class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              <div v-if="loading && !events.length" class="h-9 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 mt-1"></div>
+              <p v-else class="text-3xl font-semibold text-gray-900 dark:text-gray-100">
                 {{ pastEventsCount }}
               </p>
             </div>
@@ -136,18 +140,30 @@
                 </div>
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                  class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   :disabled="loading"
                   @click="reload"
                 >
-                  Refresh
+                  <svg v-if="loading" class="h-3 w-3 animate-spin text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span v-if="loading">Loading...</span>
+                  <span v-else>Refresh</span>
                 </button>
               </div>
 
               <!-- upcoming list -->
               <div class="mt-4 space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
                 <div
-                  v-if="!upcomingList.length && !loading"
+                  v-if="loading && !upcomingList.length"
+                  class="flex animate-pulse flex-col space-y-3"
+                >
+                  <div v-for="i in 3" :key="i" class="h-16 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+                </div>
+
+                <div
+                  v-else-if="!upcomingList.length"
                   class="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                 >
                   <div class="flex items-center gap-2">
@@ -244,7 +260,14 @@
             <template #default>
               <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
                 <div
-                  v-if="!nearDeadlineList.length && !loading"
+                  v-if="loading && !nearDeadlineList.length"
+                  class="flex animate-pulse flex-col space-y-2"
+                >
+                  <div v-for="i in 2" :key="i" class="h-14 rounded-lg bg-amber-100/50 dark:bg-amber-900/20"></div>
+                </div>
+
+                <div
+                  v-else-if="!nearDeadlineList.length"
                   class="rounded-lg border border-dashed border-amber-200 bg-amber-50 px-3 py-3 text-[11px] text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
                 >
                   <div class="flex items-center gap-2">
@@ -313,7 +336,14 @@
             <template #default>
               <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
                 <div
-                  v-if="!recentPastList.length && !loading"
+                  v-if="loading && !recentPastList.length"
+                  class="flex animate-pulse flex-col space-y-2"
+                >
+                  <div v-for="i in 2" :key="i" class="h-14 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+                </div>
+
+                <div
+                  v-else-if="!recentPastList.length"
                   class="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-3 py-3 text-[11px] text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                 >
                   <div class="flex items-center gap-2">
