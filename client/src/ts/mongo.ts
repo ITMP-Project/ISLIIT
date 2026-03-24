@@ -44,6 +44,7 @@ export type AuthUser = {
   role?: string[] | string
   createdAt?: string
   modules?: string[]
+  email?: string
 }
 
 export type Role = {
@@ -68,10 +69,6 @@ export type MongoKuppiSession = {
   createdAt?: string;
 };
 
-  _id?: string
-  name: string
-  createdAt?: string
-}
 
 export type Faculty = {
   _id?: string
