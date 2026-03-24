@@ -414,17 +414,56 @@
                 <option value="month">This Month</option>
               </select>
             </div>
+
+            <div class="flex flex-col gap-1.5">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</span>
+              <div v-if="isEditingEmail" class="flex flex-col gap-2">
+                <input
+                  v-model="userEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                />
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                  @click="saveEmail"
+                  :disabled="savingEmail"
+                >
+                  {{ savingEmail ? 'Saving...' : 'Save Email to Profile' }}
+                </button>
+              </div>
+              <div v-else class="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-2.5 dark:border-gray-800 dark:bg-white/[0.03]">
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ userEmail }}</span>
+                <button
+                  type="button"
+                  class="text-brand-500 hover:text-brand-600"
+                  @click="isEditingEmail = true"
+                >
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
             
-            <button
-              type="button"
-              class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-              @click="exportToPDF"
-            >
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download PDF
-            </button>
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <button
+                type="button"
+                class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-white/[0.03]"
+                @click="exportToPDF"
+              >
+                Download PDF
+              </button>
+              <button
+                type="button"
+                class="flex items-center justify-center gap-2 rounded-xl bg-brand-500 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                @click="sendEmailPDF"
+                :disabled="isSendingEmail || isEditingEmail"
+              >
+                {{ isSendingEmail ? 'Sending...' : 'Send to Email' }}
+              </button>
+            </div>
           </div>
         </div>
       </template>
@@ -434,6 +473,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import { useToast } from "vue-toastification";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -454,12 +494,55 @@ const calendarRef = ref();
 const { apiUrl } = useModuleEventsStore();
 const { modules, fetchModulesForContext } = useUserModulesStore();
 
+const toast = useToast();
+
 const events = ref<ModuleEvent[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
 const showExportModal = ref(false);
 const exportPeriod = ref<"today" | "week" | "month">("week");
+
+const savingEmail = ref(false);
+const isSendingEmail = ref(false);
+
+const saveEmail = async () => {
+  if (!userEmail.value.trim() || !authUser?._id) return;
+  savingEmail.value = true;
+  try {
+    const response = await fetch(`${apiUrl}/api/auth-users/${authUser._id}/email`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmail.value.trim() }),
+    });
+
+    if (!response.ok) throw new Error("Failed to save email");
+
+    const updatedUser = await response.json();
+    
+    // Sync local storage
+    const storageKey = localStorage.getItem("authUser") ? "authUser" : "sessionStorage";
+    const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      parsed.email = updatedUser.email;
+      if (localStorage.getItem("authUser")) {
+        localStorage.setItem("authUser", JSON.stringify(parsed));
+      } else {
+        sessionStorage.setItem("authUser", JSON.stringify(parsed));
+      }
+    }
+    
+    authUser.email = updatedUser.email;
+    isEditingEmail.value = false;
+    toast.success("Email saved to your profile!");
+  } catch (err) {
+    console.error(err);
+    toast.error("Error saving email");
+  } finally {
+    savingEmail.value = false;
+  }
+};
 
 const showFilters = ref(true);
 const selectedModuleIds = ref<string[]>([]);
@@ -491,6 +574,9 @@ const readAuthUser = (): AuthUser | null => {
 
 type AuthUserWithSpecialization = AuthUser & { specialization_id?: string };
 const authUser = readAuthUser() as AuthUserWithSpecialization | null;
+
+const userEmail = ref(authUser?.email || "");
+const isEditingEmail = ref(!authUser?.email);
 
 const headerTitle = computed(() =>
   authUser?.username ? `Timetable for ${authUser.username}` : "My module timetable"
@@ -721,31 +807,8 @@ type CalendarEventApi = {
 const selectedEvent = ref<CalendarEventApi | null>(null);
 const isEventDetailsOpen = ref(false);
 
-const exportToPDF = () => {
+const generatePDFDoc = (periodLabel: string, startDate: Date, endDate: Date) => {
   const doc = new jsPDF();
-  
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let startDate = startOfToday;
-  let endDate = new Date(startOfToday.getTime());
-  
-  let periodLabel = "Today";
-
-  if (exportPeriod.value === "today") {
-    endDate.setDate(endDate.getDate() + 1);
-    periodLabel = "Today";
-  } else if (exportPeriod.value === "week") {
-    const day = startDate.getDay();
-    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
-    startDate = new Date(startDate.setDate(diff));
-    endDate = new Date(startDate.getTime());
-    endDate.setDate(endDate.getDate() + 7);
-    periodLabel = "This Week";
-  } else if (exportPeriod.value === "month") {
-    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    periodLabel = "This Month";
-  }
   
   const selectedEvents = baseFilteredEvents.value.filter((evt) => {
     const start = new Date(evt.startTime);
@@ -767,7 +830,6 @@ const exportToPDF = () => {
     const start = new Date(evt.startTime);
     const end = evt.endTime ? new Date(evt.endTime) : null;
     
-    // Format options for nice output
     const timeOptions: Intl.DateTimeFormatOptions = { 
         weekday: 'short', month: 'short', day: 'numeric', 
         hour: '2-digit', minute: '2-digit' 
@@ -800,9 +862,71 @@ const exportToPDF = () => {
     alternateRowStyles: { fillColor: [245, 248, 250] },
     margin: { top: 36 }
   });
-  
+
+  return doc;
+};
+
+const getExportRange = () => {
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let startDate = startOfToday;
+  let endDate = new Date(startOfToday.getTime());
+  let periodLabel = "Today";
+
+  if (exportPeriod.value === "today") {
+    endDate.setDate(endDate.getDate() + 1);
+    periodLabel = "Today";
+  } else if (exportPeriod.value === "week") {
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
+    startDate = new Date(startDate.setDate(diff));
+    endDate = new Date(startDate.getTime());
+    endDate.setDate(endDate.getDate() + 7);
+    periodLabel = "This Week";
+  } else if (exportPeriod.value === "month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    periodLabel = "This Month";
+  }
+
+  return { periodLabel, startDate, endDate };
+};
+
+const exportToPDF = () => {
+  const { periodLabel, startDate, endDate } = getExportRange();
+  const doc = generatePDFDoc(periodLabel, startDate, endDate);
   doc.save(`Timetable_${periodLabel.replace(" ", "_")}.pdf`);
   showExportModal.value = false;
+};
+
+const sendEmailPDF = async () => {
+  if (!userEmail.value.trim()) return;
+  isSendingEmail.value = true;
+  try {
+    const { periodLabel, startDate, endDate } = getExportRange();
+    const doc = generatePDFDoc(periodLabel, startDate, endDate);
+    const blob = doc.output("blob");
+
+    const formData = new FormData();
+    formData.append("email", userEmail.value.trim());
+    formData.append("pdf", blob, "Timetable.pdf");
+
+    const response = await fetch(`${apiUrl}/api/email/send-timetable`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Failed to send email");
+    
+    const data = await response.json();
+    toast.success(data.message || "Email sent successfully!");
+    showExportModal.value = false;
+  } catch (err) {
+    console.error(err);
+    toast.error("Error sending email");
+  } finally {
+    isSendingEmail.value = false;
+  }
 };
 
 const closeEventDetails = () => {
