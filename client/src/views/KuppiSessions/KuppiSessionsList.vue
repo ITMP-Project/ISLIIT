@@ -4,19 +4,9 @@
       <!-- Page Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kuppi Sessions</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Browse and join peer tutoring sessions</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Browse Kuppi Sessions</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View available peer tutoring sessions and register to join</p>
       </div>
-      <button
-        id="btn-create-kuppi"
-        @click="showModal = true"
-        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Create Kuppi Session
-      </button>
     </div>
 
     <!-- Error Banner -->
@@ -151,195 +141,6 @@
       </div>
     </div>
 
-    <!-- ─── Create Session Modal ─── -->
-    <transition name="fade">
-      <div
-        v-if="showModal"
-        class="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-        @click.self="closeModal"
-      >
-        <div class="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
-          <!-- Modal Header -->
-          <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Create Kuppi Session</h2>
-            <button
-              @click="closeModal"
-              class="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Modal Form -->
-          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto">
-            <!-- Form Error -->
-            <div
-              v-if="formError"
-              class="px-4 py-3 rounded-lg bg-error-50 border border-error-200 text-error-700 text-sm dark:bg-error-900/20"
-            >
-              {{ formError }}
-            </div>
-
-            <!-- Title -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Title <span class="text-error-500">*</span>
-              </label>
-              <input
-                id="kuppi-title"
-                v-model="form.title"
-                type="text"
-                placeholder="e.g. Data Structures Revision"
-                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                required
-              />
-            </div>
-
-            <!-- Description -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Description <span class="text-error-500">*</span>
-              </label>
-              <textarea
-                id="kuppi-description"
-                v-model="form.description"
-                rows="3"
-                placeholder="Briefly describe what will be covered..."
-                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition resize-none"
-                required
-              ></textarea>
-            </div>
-
-            <!-- Subject -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Subject / Module <span class="text-error-500">*</span>
-              </label>
-              <input
-                id="kuppi-subject"
-                v-model="form.subject"
-                type="text"
-                placeholder="e.g. CS2020 — Algorithms"
-                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                required
-              />
-            </div>
-
-            <!-- Year & Semester row -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Year <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-year"
-                  v-model="form.year"
-                  type="text"
-                  placeholder="e.g. Year 2"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Semester <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-semester"
-                  v-model="form.semester"
-                  type="text"
-                  placeholder="e.g. Semester 1"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Date, Time & Duration row -->
-            <div class="grid grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Date <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-date"
-                  v-model="form.date"
-                  type="date"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Time <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-time"
-                  v-model="form.time"
-                  type="time"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Duration <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-duration"
-                  v-model="form.duration"
-                  type="text"
-                  placeholder="e.g. 1.5 hours"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Teams Link -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Microsoft Teams Link <span class="text-error-500">*</span>
-              </label>
-              <input
-                id="kuppi-teams-link"
-                v-model="form.teamsLink"
-                type="url"
-                placeholder="https://teams.microsoft.com/l/meetup-join/..."
-                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                required
-              />
-            </div>
-
-            <!-- Actions -->
-            <div class="flex justify-end gap-3 pt-2">
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                id="btn-submit-kuppi"
-                type="submit"
-                :disabled="submitting"
-                class="px-5 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg v-if="submitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-                {{ submitting ? "Creating..." : "Create Session" }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </transition>
-
     <!-- ─── Registration Modal ─── -->
     <transition name="fade">
       <div
@@ -458,15 +259,11 @@ const {
   isRegistering,
   registrationError,
   fetchKuppiSessions,
-  createKuppiSession,
   registerForSession,
   checkUserRegistration,
   getSessionParticipantCount,
 } = useKuppiSessionsStore();
 
-const showModal = ref(false);
-const submitting = ref(false);
-const formError = ref<string | null>(null);
 const registering = ref<Record<string, boolean>>({});
 
 // Registration modal state
@@ -475,25 +272,12 @@ const registrationFormError = ref<string | null>(null);
 const selectedSessionForRegistration = ref<string | null>(null);
 const registrationFormSubmitting = ref(false);
 
-const blankForm = () => ({
-  title: "",
-  description: "",
-  subject: "",
-  year: "",
-  semester: "",
-  date: "",
-  time: "",
-  duration: "",
-  teamsLink: "",
-});
-
 const blankRegistrationForm = () => ({
   studentId: "",
   year: "",
   semester: "",
 });
 
-const form = reactive(blankForm());
 const registrationForm = reactive(blankRegistrationForm());
 
 const readAuthUser = () => {
@@ -504,31 +288,6 @@ const readAuthUser = () => {
     return JSON.parse(raw);
   } catch {
     return null;
-  }
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  formError.value = null;
-  Object.assign(form, blankForm());
-};
-
-const handleSubmit = async () => {
-  submitting.value = true;
-  formError.value = null;
-
-  const authUser = readAuthUser();
-  const result = await createKuppiSession({
-    ...form,
-    createdBy: authUser?.username ?? "Unknown",
-  });
-
-  submitting.value = false;
-
-  if (result) {
-    closeModal();
-  } else {
-    formError.value = error.value ?? "Failed to create session. Please try again.";
   }
 };
 

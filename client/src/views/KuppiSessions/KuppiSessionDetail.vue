@@ -274,6 +274,7 @@
         </div>
       </div>
     </transition>
+    </div>
   </AdminLayout>
 </template>
 
