@@ -169,3 +169,36 @@ export async function updateAuthUserModules(req, res, next) {
     next(error);
   }
 }
+
+export async function updateAuthUserEmail(req, res, next) {
+  try {
+    const idQuery = buildIdQuery(req.params.id);
+    if (!idQuery) {
+      res.status(400).json({ error: "Invalid user id" });
+      return;
+    }
+
+    const email = String(req.body?.email ?? "").trim();
+    if (!email) {
+      res.status(400).json({ error: "Email is required" });
+      return;
+    }
+
+    const db = await getDb();
+    const user = await db.collection("auth_users").findOne(idQuery);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const result = await db.collection("auth_users").findOneAndUpdate(
+      { _id: user._id },
+      { $set: { email } },
+      { returnDocument: "after" }
+    );
+
+    res.json(stripPassword(result.value ?? { ...user, email }));
+  } catch (error) {
+    next(error);
+  }
+}
