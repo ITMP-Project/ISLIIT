@@ -1,6 +1,7 @@
 <template>
-  <div class="p-6">
-    <!-- Page Header -->
+  <AdminLayout>
+    <div class="p-6">
+      <!-- Page Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kuppi Sessions</h1>
@@ -311,12 +312,14 @@
         </div>
       </div>
     </transition>
-  </div>
+    </div>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+import AdminLayout from "@/components/layout/AdminLayout.vue";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
 const router = useRouter();

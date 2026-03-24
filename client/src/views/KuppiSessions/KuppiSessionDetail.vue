@@ -1,6 +1,7 @@
 <template>
-  <div class="p-6">
-    <!-- Back Button -->
+  <AdminLayout>
+    <div class="p-6">
+      <!-- Back Button -->
     <button
       id="btn-back-kuppi"
       @click="router.push('/kuppi-sessions')"
@@ -139,12 +140,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import AdminLayout from "@/components/layout/AdminLayout.vue";
 import type { MongoKuppiSession } from "@/ts/mongo";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
