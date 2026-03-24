@@ -25,10 +25,6 @@
         <div v-if="error" class="mt-3 rounded-lg border border-error-200 bg-error-50 px-4 py-2 text-xs text-error-700 dark:border-error-900/60 dark:bg-error-950/40 dark:text-error-300">
           {{ error }}
         </div>
-        <div v-if="successMessage" class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
-          {{ successMessage }}
-        </div>
-
         <div class="mt-4">
           <div
             v-if="selectedModules.length"
@@ -144,18 +140,19 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import type { AuthUser } from "@/ts/mongo";
 import { useUserModulesStore } from "@/store/userModules";
 
+const toast = useToast();
+
 const currentPageTitle = ref("My Modules");
 const isModulesDialogOpen = ref(false);
 const selectedModuleIds = ref<string[]>([]);
 const tempSelectedModuleIds = ref<string[]>([]);
-const successMessage = ref("");
-
 const readAuthUser = (): AuthUser | null => {
   const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
   if (!raw) return null;
@@ -210,7 +207,6 @@ const selectedModules = computed(() =>
 );
 
 const openModulesDialog = () => {
-  successMessage.value = "";
   tempSelectedModuleIds.value = [...selectedModuleIds.value];
   isModulesDialogOpen.value = true;
 };
@@ -228,7 +224,7 @@ const saveModules = async () => {
     // keep authUser in local storage in sync
     const merged: AuthUser = { ...(authUser ?? {}), ...updated };
     localStorage.setItem("authUser", JSON.stringify(merged));
-    successMessage.value = "Modules updated successfully.";
+    toast.success("Modules updated successfully.");
     isModulesDialogOpen.value = false;
   }
 };

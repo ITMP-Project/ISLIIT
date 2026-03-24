@@ -23,7 +23,7 @@ const isAdminUser = () => {
         ? [user.role]
         : []
 
-  return roles.some(role => String(role).toLowerCase() === 'admin')
+  return roles.some((role: string) => String(role).toLowerCase() === 'admin')
 }
 
 /* --------------------------------- Router ---------------------------------- */
@@ -33,16 +33,9 @@ const router = createRouter({
     return savedPosition || { left: 0, top: 0 }
   },
   routes: [
-    {
-      path: '/',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
-      meta: { title: 'eCommerce Dashboard' },
-    },
-
     // Student
     {
-      path: '/student-dashboard',
+      path: '/',
       name: 'StudentDashboard',
       component: () => import('../views/Student/StudentDashboard.vue'),
       meta: { title: 'Student Dashboard' },
@@ -118,6 +111,26 @@ const router = createRouter({
       meta: { title: 'My Module Timetable' },
     },
 
+    // Kuppi Sessions
+    {
+      path: '/kuppi-sessions',
+      name: 'Kuppi Sessions',
+      component: () => import('../views/KuppiSessions/KuppiSessionsList.vue'),
+      meta: { title: 'Kuppi Sessions' },
+    },
+    {
+      path: '/kuppi-sessions/:id',
+      name: 'Kuppi Session Detail',
+      component: () => import('../views/KuppiSessions/KuppiSessionDetail.vue'),
+      meta: { title: 'Kuppi Session Detail' },
+    },
+    {
+      path: '/kuppi-sessions-duplicate',
+      name: 'KuppiSessionsDuplicate',
+      component: () => import('../views/Tables/KuppiSessionsDuplicate.vue'),
+      meta: { title: 'Kuppi Sessions' },
+    },
+
     // Profile & Forms
     {
       path: '/profile',
@@ -168,6 +181,12 @@ const router = createRouter({
       name: 'MyModules',
       component: () => import('../views/Tables/MyModules.vue'),
       meta: { title: 'My Modules' },
+    },
+    {
+      path: '/modules/:moduleId/events',
+      name: 'ModuleEvents',
+      component: () => import('../views/Modules/ModuleEvents.vue'),
+      meta: { title: 'Module Events' },
     },
     {
       path: '/comments-table',
@@ -323,7 +342,7 @@ const router = createRouter({
 
 /* ------------------------------ Navigation guard ----------------------------- */
 router.beforeEach((to, from, next) => {
-  document.title = `Vue.js ${to.meta.title || 'TailAdmin'} | TailAdmin`
+  document.title = `ISLIIT ${to.meta.title || ''} `
 
   const isPublicRoute = to.matched.some(record => record.meta.public === true)
   const hasUser = Boolean(readAuthUser())
