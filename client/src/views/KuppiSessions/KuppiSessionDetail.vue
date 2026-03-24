@@ -124,6 +124,19 @@
                 <p class="text-sm font-semibold text-gray-800 dark:text-white mt-0.5">Microsoft Teams</p>
               </div>
             </div>
+
+            <!-- Participants -->
+            <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+              <div class="p-2 rounded-lg bg-brand-50 dark:bg-brand-900/30 text-brand-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20a7 7 0 1114 0" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 dark:text-gray-500">Registered</p>
+                <p class="text-sm font-semibold text-gray-800 dark:text-white mt-0.5">{{ sessionParticipants[session._id!] ?? 0 }} students</p>
+              </div>
+            </div>
           </div>
 
           <!-- Join Button -->
@@ -136,6 +149,28 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
             Join Session on Microsoft Teams
+          </button>
+
+          <!-- Register Button -->
+          <button
+            id="btn-register-session"
+            @click="handleRegister"
+            :disabled="registering || userRegistrations[session._id!] === true"
+            :class="[
+              'w-full py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 mt-3',
+              userRegistrations[session._id!]
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400 cursor-default'
+                : 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm hover:shadow-md'
+            ]"
+          >
+            <svg v-if="registering" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <svg v-else-if="userRegistrations[session._id!]" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+            {{ userRegistrations[session._id!] ? "Successfully Registered" : "Register for Session" }}
           </button>
         </div>
       </div>
@@ -153,8 +188,20 @@ import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 const route = useRoute();
 const router = useRouter();
 
-const { loading, error, getKuppiSession } = useKuppiSessionsStore();
+const {
+  loading,
+  error,
+  getKuppiSession,
+  registerForSession,
+  checkUserRegistration,
+  getSessionParticipantCount,
+  sessionParticipants,
+  userRegistrations,
+  registrationError,
+} = useKuppiSessionsStore();
+
 const session = ref<MongoKuppiSession | null>(null);
+const registering = ref(false);
 
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr + "T00:00:00");
@@ -166,14 +213,53 @@ const formatDate = (dateStr: string) => {
   });
 };
 
+const readAuthUser = () => {
+  const raw =
+    localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
 const joinSession = () => {
   if (session.value?.teamsLink) {
     window.open(session.value.teamsLink, "_blank", "noopener,noreferrer");
   }
 };
 
+const handleRegister = async () => {
+  const authUser = readAuthUser();
+  if (!authUser) {
+    alert("Please log in to register for a session");
+    return;
+  }
+
+  if (!session.value?._id) return;
+
+  registering.value = true;
+  const success = await registerForSession(session.value._id, authUser._id);
+  registering.value = false;
+
+  if (!success) {
+    alert(registrationError.value ?? "Failed to register. Please try again.");
+  }
+};
+
 onMounted(async () => {
   const id = String(route.params.id);
   session.value = await getKuppiSession(id);
+
+  if (session.value?._id) {
+    const authUser = readAuthUser();
+    if (authUser) {
+      await Promise.all([
+        checkUserRegistration(session.value._id, authUser._id),
+        getSessionParticipantCount(session.value._id),
+      ]);
+    }
+  }
 });
 </script>

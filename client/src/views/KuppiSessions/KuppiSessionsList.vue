@@ -94,7 +94,7 @@
           </p>
 
           <!-- Meta info -->
-          <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+          <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-4">
             <div class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17c0 5.523 4.477 10 10 10s10-4.477 10-10c0-6.002-4.5-10.747-10-10.747z" />
@@ -119,7 +119,34 @@
               </svg>
               {{ session.createdBy }}
             </div>
+            <div class="flex items-center gap-1.5 pt-1 border-t border-gray-200 dark:border-gray-700">
+              <svg class="w-3.5 h-3.5 shrink-0 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20a7 7 0 1114 0" />
+              </svg>
+              {{ sessionParticipants[session._id!] ?? 0 }} registered
+            </div>
           </div>
+
+          <!-- Register Button -->
+          <button
+            @click="handleRegisterClick($event, session._id!)"
+            :disabled="registering[session._id!] || userRegistrations[session._id!] === true || isRegistering"
+            :class="[
+              'w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2',
+              userRegistrations[session._id!]
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400 cursor-default'
+                : 'bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30'
+            ]"
+          >
+            <svg v-if="registering[session._id!]" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <svg v-else-if="userRegistrations[session._id!]" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+            {{ userRegistrations[session._id!] ? "Registered" : "Register" }}
+          </button>
         </div>
       </div>
     </div>
@@ -323,12 +350,25 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
 const router = useRouter();
-const { sessions, loading, error, fetchKuppiSessions, createKuppiSession } =
-  useKuppiSessionsStore();
+const {
+  sessions,
+  loading,
+  error,
+  sessionParticipants,
+  userRegistrations,
+  isRegistering,
+  registrationError,
+  fetchKuppiSessions,
+  createKuppiSession,
+  registerForSession,
+  checkUserRegistration,
+  getSessionParticipantCount,
+} = useKuppiSessionsStore();
 
 const showModal = ref(false);
 const submitting = ref(false);
 const formError = ref<string | null>(null);
+const registering = ref<Record<string, boolean>>({});
 
 const blankForm = () => ({
   title: "",
@@ -393,7 +433,39 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-onMounted(fetchKuppiSessions);
+const handleRegisterClick = async (e: Event, sessionId: string) => {
+  e.stopPropagation();
+  const authUser = readAuthUser();
+  if (!authUser) {
+    alert("Please log in to register for a session");
+    return;
+  }
+
+  registering.value[sessionId] = true;
+  const success = await registerForSession(sessionId, authUser._id);
+  registering.value[sessionId] = false;
+
+  if (!success) {
+    alert(registrationError.value ?? "Failed to register. Please try again.");
+  }
+};
+
+const loadSessionRegistrations = async () => {
+  const authUser = readAuthUser();
+  if (!authUser) return;
+
+  for (const session of sessions.value) {
+    await Promise.all([
+      checkUserRegistration(session._id!, authUser._id),
+      getSessionParticipantCount(session._id!),
+    ]);
+  }
+};
+
+onMounted(async () => {
+  await fetchKuppiSessions();
+  await loadSessionRegistrations();
+});
 </script>
 
 <style scoped>
