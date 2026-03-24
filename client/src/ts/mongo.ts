@@ -68,11 +68,6 @@ export type MongoKuppiSession = {
   createdAt?: string;
 };
 
-  _id?: string
-  name: string
-  createdAt?: string
-}
-
 export type Faculty = {
   _id?: string
   faculty_name: string
