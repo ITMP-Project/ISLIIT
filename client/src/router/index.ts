@@ -47,6 +47,30 @@ const router = createRouter({
       },
     },
     {
+      path: "/connect-u/academic-support",
+      name: "Academic Support",
+      component: () => import("../views/ConnectU/AcademicSupport.vue"),
+      meta: { title: "Academic Support" },
+    },
+    {
+      path: "/connect-u/academic-support/:id",
+      name: "Academic Module Details",
+      component: () => import("../views/ConnectU/AcademicModuleDetails.vue"),
+      meta: { title: "Module Helpers" },
+    },
+    {
+      path: "/connect-u/chat/my-inbox",
+      name: "Helper Inbox",
+      component: () => import("../views/ConnectU/HelperInbox.vue"),
+      meta: { title: "My Consultations" },
+    },
+    {
+      path: "/connect-u/chat/:id",
+      name: "Helper Chat",
+      component: () => import("../views/ConnectU/HelperChat.vue"),
+      meta: { title: "Consult Helper" },
+    },
+    {
       path: "/connect-u/mental-health",
       name: "Mental Health Support",
       component: () => import("../views/ConnectU/PHelperList.vue"),
@@ -117,6 +141,15 @@ const router = createRouter({
       component: () => import("../views/Admin/RoleManagement.vue"),
       meta: {
         title: "Role Management",
+        requiresAdmin: true,
+      },
+    },
+    {
+      path: "/admin/academic",
+      name: "Academic Admin",
+      component: () => import("../views/Admin/AcademicAdmin.vue"),
+      meta: {
+        title: "Academic Admin",
         requiresAdmin: true,
       },
     },

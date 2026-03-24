@@ -297,6 +297,8 @@ const menuGroups = [
         subItems: [
           { name: "Mental Support", path: "/connect-u/mental-health", pro: false },
           { name: "Academic Support", path: "/connect-u/academic-support", pro: false },
+          { name: "Academic Admin", path: "/admin/academic", pro: false, adminOnly: true },
+          
         ],
       },
       {
