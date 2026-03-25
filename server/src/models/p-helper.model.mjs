@@ -3,9 +3,11 @@ const pHelperFields = [
   "name",
   "bio",
   "profile_picture",
-  "availability_status",
-  "verified_status",
   "onboarding_status",
+  "year_of_study",
+  "contact_no",
+  "why_select_you",
+  "auth_user_id"
 ];
 
 const availabilityOptions = ["active", "busy", "offline"];
@@ -26,6 +28,10 @@ export function validatePHelperPayload(payload, { partial = false } = {}) {
       raw = String(raw).trim();
       if (!raw) {
         errors.push("student_id is required");
+        continue;
+      }
+      if (raw.length !== 10) {
+        errors.push("student_id must be exactly 10 characters");
         continue;
       }
       value[field] = raw;
@@ -91,10 +97,53 @@ export function validatePHelperPayload(payload, { partial = false } = {}) {
       value[field] = raw;
       continue;
     }
+
+    // year_of_study
+    if (field === "year_of_study") {
+      raw = String(raw).trim();
+      if (!raw) {
+        errors.push("year_of_study is required");
+        continue;
+      }
+      value[field] = raw;
+      continue;
+    }
+
+    // contact_no
+    if (field === "contact_no") {
+      raw = String(raw).trim();
+      if (!raw) {
+        errors.push("contact_no is required");
+        continue;
+      }
+      if (!/^\d{10}$/.test(raw)) {
+        errors.push("contact_no must be exactly 10 digits");
+        continue;
+      }
+      value[field] = raw;
+      continue;
+    }
+
+    // why_select_you
+    if (field === "why_select_you") {
+      raw = String(raw).trim();
+      if (!raw) {
+        errors.push("why_select_you is required");
+        continue;
+      }
+      value[field] = raw;
+      continue;
+    }
+
+    // auth_user_id
+    if (field === "auth_user_id") {
+      value[field] = String(raw).trim();
+      continue;
+    }
   }
 
   if (!partial) {
-    for (const field of ["student_id", "name", "bio"]) {
+    for (const field of ["student_id", "name", "bio", "year_of_study", "contact_no", "why_select_you"]) {
       if (!value[field]) {
         errors.push(`${field} is required`);
       }

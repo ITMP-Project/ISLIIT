@@ -39,7 +39,6 @@
                 </h1>
               </div>
               <div>
-             
                 <form @submit.prevent="handleSubmit">
                   <div class="space-y-5">
                     <!-- Username -->
@@ -166,7 +165,7 @@
                         class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70"
                         :disabled="submitting"
                       >
-                        {{ submitting ? "Signing in..." : "Sign In" }}
+                        {{ submitting ? 'Signing in...' : 'Sign In' }}
                       </button>
                     </div>
                   </div>
@@ -190,16 +189,12 @@
         <div
           class="relative items-center hidden w-full h-full lg:w-1/2 bg-brand-950 dark:bg-white/5 lg:grid"
         >
-          <div class="flex items-center justify-center z-1">
-            <common-grid-shape />
-            <div class="flex flex-col items-center max-w-xs">
-              <router-link to="/" class="block mb-4">
-                <img width="{231}" height="{48}" src="/images/logo/auth-logo.svg" alt="Logo" />
-              </router-link>
-              <p class="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
-              </p>
-            </div>
+          <div class="flex items-stretch justify-center z-1 w-full h-full min-h-0">
+            <img
+              src="/images/auth-page.jpg"
+              alt="Sign in illustration"
+              class="h-full w-full object-cover"
+            />
           </div>
         </div>
       </div>
@@ -209,7 +204,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -254,6 +248,24 @@ const handleSubmit = async () => {
       const otherStorage = rememberMe.value ? sessionStorage : localStorage
       storage.setItem('authUser', JSON.stringify(data))
       otherStorage.removeItem('authUser')
+
+      const auth_user_id = data.id || data._id
+      const student_id = data.username
+      if (auth_user_id || student_id) {
+        try {
+          await fetch(`${apiUrl}/api/p-helper/presence/update`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              availability_status: 'online',
+              auth_user_id,
+              student_id,
+            }),
+          })
+        } catch (e) {
+          console.error('Failed to set presence to online', e)
+        }
+      }
     }
 
     toast.success('Signed in successfully.')
