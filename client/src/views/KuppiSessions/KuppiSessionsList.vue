@@ -1,21 +1,12 @@
 <template>
-  <div class="p-6">
-    <!-- Page Header -->
+  <AdminLayout>
+    <div class="p-6">
+      <!-- Page Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kuppi Sessions</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Browse and join peer tutoring sessions</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Browse Kuppi Sessions</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View available peer tutoring sessions and register to join</p>
       </div>
-      <button
-        id="btn-create-kuppi"
-        @click="showModal = true"
-        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Create Kuppi Session
-      </button>
     </div>
 
     <!-- Error Banner -->
@@ -93,7 +84,7 @@
           </p>
 
           <!-- Meta info -->
-          <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+          <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-4">
             <div class="flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17c0 5.523 4.477 10 10 10s10-4.477 10-10c0-6.002-4.5-10.747-10-10.747z" />
@@ -118,24 +109,51 @@
               </svg>
               {{ session.createdBy }}
             </div>
+            <div class="flex items-center gap-1.5 pt-1 border-t border-gray-200 dark:border-gray-700">
+              <svg class="w-3.5 h-3.5 shrink-0 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20a7 7 0 1114 0" />
+              </svg>
+              {{ sessionParticipants[session._id!] ?? 0 }} registered
+            </div>
           </div>
+
+          <!-- Register Button -->
+          <button
+            @click="handleRegisterClick($event, session._id!)"
+            :disabled="registering[session._id!] || userRegistrations[session._id!] === true || isRegistering"
+            :class="[
+              'w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2',
+              userRegistrations[session._id!]
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400 cursor-default'
+                : 'bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30'
+            ]"
+          >
+            <svg v-if="registering[session._id!]" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <svg v-else-if="userRegistrations[session._id!]" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+            {{ userRegistrations[session._id!] ? "Registered" : "Register" }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ─── Create Session Modal ─── -->
+    <!-- ─── Registration Modal ─── -->
     <transition name="fade">
       <div
-        v-if="showModal"
+        v-if="showRegistrationModal"
         class="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-        @click.self="closeModal"
+        @click.self="closeRegistrationModal"
       >
-        <div class="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
           <!-- Modal Header -->
           <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Create Kuppi Session</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Register for Session</h2>
             <button
-              @click="closeModal"
+              @click="closeRegistrationModal"
               class="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,141 +163,52 @@
           </div>
 
           <!-- Modal Form -->
-          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto">
+          <form @submit.prevent="handleRegistrationFormSubmit" class="px-6 py-5 space-y-4">
             <!-- Form Error -->
             <div
-              v-if="formError"
+              v-if="registrationFormError"
               class="px-4 py-3 rounded-lg bg-error-50 border border-error-200 text-error-700 text-sm dark:bg-error-900/20"
             >
-              {{ formError }}
+              {{ registrationFormError }}
             </div>
 
-            <!-- Title -->
+            <!-- Student ID -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Title <span class="text-error-500">*</span>
+                Student ID <span class="text-error-500">*</span>
               </label>
               <input
-                id="kuppi-title"
-                v-model="form.title"
+                v-model="registrationForm.studentId"
                 type="text"
-                placeholder="e.g. Data Structures Revision"
+                placeholder="e.g. ST123456"
                 class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
                 required
               />
             </div>
 
-            <!-- Description -->
+            <!-- Year -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Description <span class="text-error-500">*</span>
-              </label>
-              <textarea
-                id="kuppi-description"
-                v-model="form.description"
-                rows="3"
-                placeholder="Briefly describe what will be covered..."
-                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition resize-none"
-                required
-              ></textarea>
-            </div>
-
-            <!-- Subject -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Subject / Module <span class="text-error-500">*</span>
+                Year <span class="text-error-500">*</span>
               </label>
               <input
-                id="kuppi-subject"
-                v-model="form.subject"
+                v-model="registrationForm.year"
                 type="text"
-                placeholder="e.g. CS2020 — Algorithms"
+                placeholder="e.g. Year 2"
                 class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
                 required
               />
             </div>
 
-            <!-- Year & Semester row -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Year <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-year"
-                  v-model="form.year"
-                  type="text"
-                  placeholder="e.g. Year 2"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Semester <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-semester"
-                  v-model="form.semester"
-                  type="text"
-                  placeholder="e.g. Semester 1"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Date, Time & Duration row -->
-            <div class="grid grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Date <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-date"
-                  v-model="form.date"
-                  type="date"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Time <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-time"
-                  v-model="form.time"
-                  type="time"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  Duration <span class="text-error-500">*</span>
-                </label>
-                <input
-                  id="kuppi-duration"
-                  v-model="form.duration"
-                  type="text"
-                  placeholder="e.g. 1.5 hours"
-                  class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Teams Link -->
+            <!-- Semester -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Microsoft Teams Link <span class="text-error-500">*</span>
+                Semester <span class="text-error-500">*</span>
               </label>
               <input
-                id="kuppi-teams-link"
-                v-model="form.teamsLink"
-                type="url"
-                placeholder="https://teams.microsoft.com/l/meetup-join/..."
+                v-model="registrationForm.semester"
+                type="text"
+                placeholder="e.g. Semester 1"
                 class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
                 required
               />
@@ -289,57 +218,67 @@
             <div class="flex justify-end gap-3 pt-2">
               <button
                 type="button"
-                @click="closeModal"
+                @click="closeRegistrationModal"
                 class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
-                id="btn-submit-kuppi"
                 type="submit"
-                :disabled="submitting"
+                :disabled="registrationFormSubmitting"
                 class="px-5 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
               >
-                <svg v-if="submitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <svg v-if="registrationFormSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                {{ submitting ? "Creating..." : "Create Session" }}
+                {{ registrationFormSubmitting ? "Registering..." : "Register" }}
               </button>
             </div>
           </form>
         </div>
       </div>
     </transition>
-  </div>
+    </div>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+import AdminLayout from "@/components/layout/AdminLayout.vue";
 import { useKuppiSessionsStore } from "@/store/kuppiSessions";
 
 const router = useRouter();
-const { sessions, loading, error, fetchKuppiSessions, createKuppiSession } =
-  useKuppiSessionsStore();
+const {
+  sessions,
+  loading,
+  error,
+  sessionParticipants,
+  userRegistrations,
+  isRegistering,
+  registrationError,
+  fetchKuppiSessions,
+  registerForSession,
+  checkUserRegistration,
+  getSessionParticipantCount,
+} = useKuppiSessionsStore();
 
-const showModal = ref(false);
-const submitting = ref(false);
-const formError = ref<string | null>(null);
+const registering = ref<Record<string, boolean>>({});
 
-const blankForm = () => ({
-  title: "",
-  description: "",
-  subject: "",
+// Registration modal state
+const showRegistrationModal = ref(false);
+const registrationFormError = ref<string | null>(null);
+const selectedSessionForRegistration = ref<string | null>(null);
+const registrationFormSubmitting = ref(false);
+
+const blankRegistrationForm = () => ({
+  studentId: "",
   year: "",
   semester: "",
-  date: "",
-  time: "",
-  duration: "",
-  teamsLink: "",
 });
 
-const form = reactive(blankForm());
+const registrationForm = reactive(blankRegistrationForm());
 
 const readAuthUser = () => {
   const raw =
@@ -349,31 +288,6 @@ const readAuthUser = () => {
     return JSON.parse(raw);
   } catch {
     return null;
-  }
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  formError.value = null;
-  Object.assign(form, blankForm());
-};
-
-const handleSubmit = async () => {
-  submitting.value = true;
-  formError.value = null;
-
-  const authUser = readAuthUser();
-  const result = await createKuppiSession({
-    ...form,
-    createdBy: authUser?.username ?? "Unknown",
-  });
-
-  submitting.value = false;
-
-  if (result) {
-    closeModal();
-  } else {
-    formError.value = error.value ?? "Failed to create session. Please try again.";
   }
 };
 
@@ -390,7 +304,74 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-onMounted(fetchKuppiSessions);
+const handleRegisterClick = async (e: Event, sessionId: string) => {
+  e.stopPropagation();
+  const authUser = readAuthUser();
+  if (!authUser) {
+    alert("Please log in to register for a session");
+    return;
+  }
+
+  selectedSessionForRegistration.value = sessionId;
+  showRegistrationModal.value = true;
+  registrationFormError.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
+
+const closeRegistrationModal = () => {
+  showRegistrationModal.value = false;
+  registrationFormError.value = null;
+  selectedSessionForRegistration.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
+
+const handleRegistrationFormSubmit = async () => {
+  if (!registrationForm.studentId.trim() || !registrationForm.year.trim() || !registrationForm.semester.trim()) {
+    registrationFormError.value = "All fields are required";
+    return;
+  }
+
+  if (!selectedSessionForRegistration.value) return;
+
+  registrationFormSubmitting.value = true;
+  registrationFormError.value = null;
+
+  const authUser = readAuthUser();
+  const success = await registerForSession(
+    selectedSessionForRegistration.value,
+    authUser._id,
+    registrationForm.studentId.trim(),
+    registrationForm.year.trim(),
+    registrationForm.semester.trim()
+  );
+
+  registrationFormSubmitting.value = false;
+
+  if (success) {
+    closeRegistrationModal();
+    // Show success message
+    alert("Successfully registered for the session!");
+  } else {
+    registrationFormError.value = registrationError.value ?? "Failed to register. Please try again.";
+  }
+};
+
+const loadSessionRegistrations = async () => {
+  const authUser = readAuthUser();
+  if (!authUser) return;
+
+  for (const session of sessions.value) {
+    await Promise.all([
+      checkUserRegistration(session._id!, authUser._id),
+      getSessionParticipantCount(session._id!),
+    ]);
+  }
+};
+
+onMounted(async () => {
+  await fetchKuppiSessions();
+  await loadSessionRegistrations();
+});
 </script>
 
 <style scoped>

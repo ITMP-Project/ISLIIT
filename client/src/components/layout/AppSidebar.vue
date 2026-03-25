@@ -281,10 +281,13 @@ const menuGroups = [
       //   name: 'Calendar',
       //   path: '/calendar',
       // },
-        {
+      {
         icon: ChatIcon,
-        name: "Kuppi Sessions",
-        path: "/kuppi-sessions",
+        name: 'Kuppi Sessions',
+        subItems: [
+          { name: 'Browse Kuppi Sessions', path: '/kuppi-sessions', pro: false },
+          { name: 'Create a Kuppi Session', path: '/kuppi-sessions/create', pro: false },
+        ],
       },
       {
         name: 'Connect U',

@@ -111,18 +111,27 @@ const router = createRouter({
       meta: { title: 'My Module Timetable' },
     },
 
-    // Kuppi Sessions
+    // Kuppi Sessions (Main Topic)
+    // Sub-Feature: Browse Kuppi Sessions
     {
       path: '/kuppi-sessions',
-      name: 'Kuppi Sessions',
+      name: 'BrowseKuppiSessions',
       component: () => import('../views/KuppiSessions/KuppiSessionsList.vue'),
-      meta: { title: 'Kuppi Sessions' },
+      meta: { title: 'Browse Kuppi Sessions' },
     },
+    // Sub-Feature: Create a Kuppi Session
+    {
+      path: '/kuppi-sessions/create',
+      name: 'CreateKuppiSession',
+      component: () => import('../views/KuppiSessions/CreateKuppiSession.vue'),
+      meta: { title: 'Create a Kuppi Session' },
+    },
+    // Session Details (Supporting route)
     {
       path: '/kuppi-sessions/:id',
-      name: 'Kuppi Session Detail',
+      name: 'KuppiSessionDetail',
       component: () => import('../views/KuppiSessions/KuppiSessionDetail.vue'),
-      meta: { title: 'Kuppi Session Detail' },
+      meta: { title: 'Kuppi Session Details' },
     },
     {
       path: '/kuppi-sessions-duplicate',
