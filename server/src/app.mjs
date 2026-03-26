@@ -15,6 +15,7 @@ import specializationsRouter from "./routes/specializations.mjs";
 import modulesRouter from "./routes/modules.mjs";
 import peerpointRouter from "./routes/peerpoint.mjs";
 import pHelpersRouter from "./routes/p-helper.mjs";
+import academicRouter from "./routes/academic.mjs";
 import chatRouter from "./routes/chat.mjs";
 import emailRouter from "./routes/email.mjs";
 
@@ -42,6 +43,8 @@ app.use("/api/modules", modulesRouter);
 app.use("/api/peerpoint", peerpointRouter);
 app.use("/api/p-helper", pHelpersRouter);
 app.use("/api/psychological-helpers", pHelpersRouter);
+app.use("/api/academic", academicRouter);
+
 app.use("/api/chat", chatRouter);
 app.use("/api/email", emailRouter);
 
