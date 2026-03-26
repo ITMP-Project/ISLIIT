@@ -1,4 +1,4 @@
-# TailAdmin Vue.js Dashboard
+# ISLIIT
 
 This repo is split into two parts:
 
@@ -6,10 +6,7 @@ This repo is split into two parts:
 - `server/` - Node + MongoDB API
 
 #### Preview
- - [Demo](https://themewagon.github.io/tailadmin-vuejs/)
-
-#### Download
- - [Download from ThemeWagon](https://themewagon.com/themes/tailadmin-vuejs/)
+ - [Demo]()
 
 
 ## Client (Vue)
@@ -32,7 +29,7 @@ Seed demo data:
 
 ```bash
 cd server
-npm run seed
+npm run start
 ```
 
 ## Environment Variables
@@ -57,8 +54,3 @@ VITE_API_URL=http://localhost:4000
 Design and code is completely written by TailAdmin and development team.
 ```
 
-## License
-
- - Design and Code is Copyright &copy; [TailAdmin](https://tailadmin.com/)
- - Licensed cover under [MIT]
- - Distributed by [ThemeWagon](https://themewagon.com)
