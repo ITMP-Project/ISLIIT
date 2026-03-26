@@ -25,13 +25,6 @@ npm install
 npm run start
 ```
 
-Seed demo data:
-
-```bash
-cd server
-npm run start
-```
-
 ## Environment Variables
 
 Server (file: `server/.env`):
