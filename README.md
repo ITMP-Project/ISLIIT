@@ -41,9 +41,3 @@ Client (file: `client/.env`):
 VITE_API_URL=http://localhost:4000
 ```
 
-
-## Author
-```
-Design and code is completely written by TailAdmin and development team.
-```
-
