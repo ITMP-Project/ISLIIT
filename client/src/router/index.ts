@@ -111,18 +111,27 @@ const router = createRouter({
       meta: { title: 'My Module Timetable' },
     },
 
-    // Kuppi Sessions
+    // Kuppi Sessions (Main Topic)
+    // Sub-Feature: Browse Kuppi Sessions
     {
       path: '/kuppi-sessions',
-      name: 'Kuppi Sessions',
+      name: 'BrowseKuppiSessions',
       component: () => import('../views/KuppiSessions/KuppiSessionsList.vue'),
-      meta: { title: 'Kuppi Sessions' },
+      meta: { title: 'Browse Kuppi Sessions' },
     },
+    // Sub-Feature: Create a Kuppi Session
+    {
+      path: '/kuppi-sessions/create',
+      name: 'CreateKuppiSession',
+      component: () => import('../views/KuppiSessions/CreateKuppiSession.vue'),
+      meta: { title: 'Create a Kuppi Session' },
+    },
+    // Session Details (Supporting route)
     {
       path: '/kuppi-sessions/:id',
-      name: 'Kuppi Session Detail',
+      name: 'KuppiSessionDetail',
       component: () => import('../views/KuppiSessions/KuppiSessionDetail.vue'),
-      meta: { title: 'Kuppi Session Detail' },
+      meta: { title: 'Kuppi Session Details' },
     },
     {
       path: '/kuppi-sessions-duplicate',
@@ -265,6 +274,38 @@ const router = createRouter({
       name: 'PsychologicalHelperProfile',
       component: () => import('../views/ConnectU/PHelperProfile.vue'),
       meta: { title: 'Helper Profile' },
+    },
+
+    // Academic Support
+    {
+      path: "/connect-u/academic-support",
+      name: "Academic Support",
+      component: () => import("../views/ConnectU/AcademicSupport.vue"),
+      meta: { title: "Academic Support" },
+    },
+    {
+      path: "/connect-u/academic-support/:id",
+      name: "Academic Module Details",
+      component: () => import("../views/ConnectU/AcademicModuleDetails.vue"),
+      meta: { title: "Module Helpers" },
+    },
+    {
+      path: "/connect-u/chat/my-inbox",
+      name: "Helper Inbox",
+      component: () => import("../views/ConnectU/HelperInbox.vue"),
+      meta: { title: "My Consultations" },
+    },
+    {
+      path: "/connect-u/chat/:id",
+      name: "Helper Chat",
+      component: () => import("../views/ConnectU/HelperChat.vue"),
+      meta: { title: "Consult Helper" },
+    },
+    {
+      path: "/admin/academic",
+      name: "Academic Admin",
+      component: () => import("../views/Admin/AcademicAdmin.vue"),
+      meta: { title: "Academic Admin", requiresAdmin: true },
     },
 
     // UI

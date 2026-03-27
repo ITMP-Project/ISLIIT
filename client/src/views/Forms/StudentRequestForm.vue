@@ -17,7 +17,7 @@
             >
               Student Request
             </button>
-            <button
+            <!-- <button
               type="button"
               class="rounded-full px-4 py-1.5 text-xs font-medium transition"
               :class="
@@ -40,24 +40,40 @@
               @click="activeTab = 'book'"
             >
               Book Show Request
-            </button>
+            </button> -->
           </div>
         </div>
 
         <div class="space-y-4">
           <div
-            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/50 p-5 text-xs text-gray-600 dark:border-gray-800 dark:bg-gray-900/50 dark:text-gray-300"
           >
-            <div class="flex flex-col gap-0.5">
-              <span class="font-medium text-gray-700 dark:text-gray-100">
-                Request status: {{ statusLabel }}
+            <div class="flex flex-col gap-1.5">
+              <span class="flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                Request Status
+                <span
+                  :class="[
+                    'inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider transition-colors',
+                    statusClass,
+                  ]"
+                >
+                  {{ statusLabel }}
+                </span>
               </span>
-              <span v-if="myRequest" class="text-[11px] text-gray-500 dark:text-gray-400">
-                Last updated:
-                {{ myRequest.updatedAt ? new Date(myRequest.updatedAt).toLocaleString() : "—" }}
-              </span>
-              <span v-else class="text-[11px] text-gray-500 dark:text-gray-400">
-                You have not submitted a student request yet.
+              <div v-if="myRequest" class="flex flex-col gap-0.5">
+                <span class="text-[11px] text-gray-500 dark:text-gray-400">
+                  Last updated:
+                  {{ myRequest.updatedAt ? new Date(myRequest.updatedAt).toLocaleString() : "—" }}
+                </span>
+                <span
+                  v-if="myRequest.status === 'approved'"
+                  class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
+                >
+                  ✓ Your request has been approved by the administrator.
+                </span>
+              </div>
+              <span v-else class="text-[11px] text-gray-500 dark:text-gray-400 italic">
+                You have not submitted a student request yet. Please fill the form below.
               </span>
             </div>
           </div>
@@ -163,10 +179,26 @@
 
             <button
               type="submit"
-              class="h-11 rounded-lg bg-brand-500 px-4 text-sm font-medium text-white transition hover:bg-brand-600 md:col-span-2"
+              class="h-11 rounded-lg px-4 text-sm font-bold text-white transition-all md:col-span-2"
+              :class="
+                hasAnyRequest
+                  ? myRequest?.status === 'approved'
+                    ? 'bg-emerald-500 hover:bg-emerald-600'
+                    : 'bg-amber-500 hover:bg-amber-600'
+                  : 'bg-brand-500 hover:bg-brand-600'
+              "
               :disabled="saving || !username || hasAnyRequest"
             >
-              {{ hasAnyRequest ? "Request Sent" : saving ? "Submitting..." : "Submit Request" }}
+              <div class="flex items-center justify-center gap-2">
+                <span v-if="saving">Submitting...</span>
+                <template v-else-if="myRequest?.status === 'approved'">
+                  <span>Request Approved</span>
+                </template>
+                <template v-else-if="hasAnyRequest">
+                  <span>Already Requested</span>
+                </template>
+                <span v-else>Submit Request</span>
+              </div>
             </button>
           </form>
         </div>
@@ -321,8 +353,23 @@ const {
 
 const hasAnyRequest = computed(() => Boolean(myRequest.value));
 const statusLabel = computed(() => {
-  const status = String(myRequest.value?.status ?? "not submitted");
-  return status || "not submitted";
+  const status = String(myRequest.value?.status ?? "Not Submitted");
+  return status;
+});
+
+const statusClass = computed(() => {
+  const status = myRequest.value?.status;
+  if (!status) return "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700";
+  if (status === "approved") {
+    return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800";
+  }
+  if (status === "pending") {
+    return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+  }
+  if (status === "rejected") {
+    return "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200 dark:border-rose-800";
+  }
+  return "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700";
 });
 
 watch(
