@@ -198,7 +198,6 @@ import {
   ListIcon,
   ShieldCheckIcon,
   UsersIcon,
-  
 } from '../../icons'
 
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
@@ -227,14 +226,10 @@ const menuGroups = [
   {
     title: 'Menu',
     items: [
-      
-    
-    
-      
       {
         icon: GridIcon,
-        name: "User Profile",
-        path: "/profile",
+        name: 'User Profile',
+        path: '/profile',
         name: 'Modules Sessions',
         subItems: [
           {
@@ -278,10 +273,6 @@ const menuGroups = [
         icon: ChatIcon,
         name: 'Kuppi Sessions',
         subItems: [
-          { name: "Mental Support", path: "/connect-u/mental-health", pro: false },
-          { name: "Academic Support", path: "/connect-u/academic-support", pro: false },
-          { name: "Academic Admin", path: "/admin/academic", pro: false, adminOnly: true },
-          
           { name: 'Browse Kuppi Sessions', path: '/kuppi-sessions', pro: false },
           { name: 'Create a Kuppi Session', path: '/kuppi-sessions/create', pro: false },
         ],
@@ -292,6 +283,7 @@ const menuGroups = [
         subItems: [
           { name: 'Mental Support', path: '/connect-u/mental-health', pro: false },
           { name: 'Academic Support', path: '/connect-u/academic-support', pro: false },
+          { name: 'Academic Admin', path: '/admin/academic', pro: false, adminOnly: true },
         ],
       },
       {
@@ -309,7 +301,7 @@ const menuGroups = [
         subItems: [
           // { name: "Kuppi Sessions", path: "/kuppi-sessions-duplicate", pro: false },
           // { name: "Comments Table", path: "/comments-table", pro: false },
-          
+
           {
             icon: GridIcon,
             name: 'Module Events (Admin)',
@@ -317,7 +309,7 @@ const menuGroups = [
             pro: false,
             adminOnly: true,
           },
-           {
+          {
             icon: BoxCubeIcon,
             name: 'Student Requests (Admin)',
             path: '/admin-student-requests',
@@ -357,12 +349,12 @@ const menuGroups = [
           // },
         ],
       },
-        {
+      {
         icon: UserCircleIcon,
         name: 'User Profile',
         path: '/profile',
       },
-    
+
       // {
       //   name: 'Forms',
       //   icon: ListIcon,
