@@ -107,7 +107,7 @@
 import { ChevronDownIcon, LogoutIcon, UserCircleIcon } from '@/icons'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthUser } from '@/composables/useAuthUser'
+import { useAuthUser, clearAuthUser } from '@/composables/useAuthUser'
 
 const router = useRouter()
 
@@ -155,8 +155,7 @@ const handleSignOut = async () => {
     }
   }
 
-  localStorage.removeItem('authUser')
-  sessionStorage.removeItem('authUser')
+  clearAuthUser()
   closeDropdown()
   await router.push('/signin')
 }

@@ -207,6 +207,7 @@ import { ref } from 'vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { refreshAuthUser } from '@/composables/useAuthUser'
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
@@ -248,6 +249,9 @@ const handleSubmit = async () => {
       const otherStorage = rememberMe.value ? sessionStorage : localStorage
       storage.setItem('authUser', JSON.stringify(data))
       otherStorage.removeItem('authUser')
+
+      // Refresh the global auth user state
+      refreshAuthUser()
 
       const auth_user_id = data.id || data._id
       const student_id = data.username
