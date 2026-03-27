@@ -1,4 +1,4 @@
-# TailAdmin ISLIIT Dashboard
+# ISLIIT
 
 This repo is split into two parts:
 
@@ -6,10 +6,7 @@ This repo is split into two parts:
 - `server/` - Node + MongoDB API
 
 #### Preview
- - [Demo](https://themewagon.github.io/tailadmin-vuejs/)
-
-#### Download
- - [Download from ThemeWagon](https://themewagon.com/themes/tailadmin-vuejs/)
+ - [Demo]()
 
 
 ## Client (Vue)
@@ -28,13 +25,6 @@ npm install
 npm run start
 ```
 
-Seed demo data:
-
-```bash
-cd server
-npm run seed
-```
-
 ## Environment Variables
 
 Server (file: `server/.env`):
@@ -51,15 +41,3 @@ Client (file: `client/.env`):
 VITE_API_URL=http://localhost:4000
 ```
 
-
-## Author
-```
-Design and code is completely written by TailAdmin and development team.
-```
-
-## License
-
- - Design and Code is Copyright &copy; [TailAdmin](https://tailadmin.com/)
- - Licensed cover under [MIT]
- - Distributed by [ThemeWagon](https://themewagon.com)
-hii
