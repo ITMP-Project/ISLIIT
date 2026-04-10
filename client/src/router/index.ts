@@ -296,7 +296,7 @@ const router = createRouter({
       meta: { title: "My Consultations" },
     },
     {
-      path: "/connect-u/chat/:id",
+      path: "/connect-u/academic-chat/:id",
       name: "Helper Chat",
       component: () => import("../views/ConnectU/HelperChat.vue"),
       meta: { title: "Consult Helper" },

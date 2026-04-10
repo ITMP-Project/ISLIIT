@@ -23,7 +23,7 @@
 
         <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
           <li v-for="studentId in students" :key="studentId" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-            <router-link :to="`/connect-u/chat/${helperProfile._id}?studentId=${studentId}`" class="flex items-center justify-between p-5">
+            <router-link :to="`/connect-u/academic-chat/${helperProfile._id}?studentId=${studentId}`" class="flex items-center justify-between p-5">
               <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-lg">
                   S

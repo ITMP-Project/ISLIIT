@@ -38,7 +38,7 @@
             <p class="text-brand-500 text-xs font-semibold mb-3">Year {{ helper.year_of_study }}</p>
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">{{ helper.introduction }}</p>
             
-            <button v-if="!myHelperProfile || helper._id !== myHelperProfile._id" @click="$router.push(`/connect-u/chat/${helper._id}`)" class="mt-auto w-full py-2.5 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium text-sm rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-center gap-2">
+            <button v-if="!myHelperProfile || helper._id !== myHelperProfile._id" @click="$router.push(`/connect-u/academic-chat/${helper._id}`)" class="mt-auto w-full py-2.5 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium text-sm rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
               Consult
             </button>
