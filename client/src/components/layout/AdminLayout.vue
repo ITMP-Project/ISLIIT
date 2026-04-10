@@ -22,16 +22,6 @@
           >
             ISLIIT
           </a>
-          ~ Distributed by 
-          <a 
-            href="https://themewagon.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="text-brand-500 hover:text-brand-600 transition-colors duration-200 font-medium"
-          >
-            ThemeWagon
-          </a>
-          .
         </p>
       </footer>
     </div>

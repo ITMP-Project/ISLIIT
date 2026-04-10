@@ -1,0 +1,386 @@
+<template>
+  <AdminLayout>
+    <div class="p-6">
+      <!-- Page Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Browse Kuppi Sessions</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">View available peer tutoring sessions and register to join</p>
+      </div>
+    </div>
+
+    <!-- Error Banner -->
+    <div
+      v-if="error"
+      class="mb-4 px-4 py-3 rounded-lg bg-error-50 border border-error-200 text-error-700 text-sm dark:bg-error-900/20 dark:border-error-800 dark:text-error-400"
+    >
+      {{ error }}
+    </div>
+
+    <!-- Loading -->
+    <div v-if="loading" class="flex justify-center items-center h-48 text-gray-400">
+      <svg class="animate-spin w-8 h-8" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      </svg>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-else-if="!loading && sessions.length === 0"
+      class="flex flex-col items-center justify-center h-64 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-gray-400"
+    >
+      <svg class="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      <p class="font-medium">No Kuppi Sessions yet</p>
+      <p class="text-sm mt-1">Be the first to create one!</p>
+    </div>
+
+    <!-- Sessions Grid -->
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div
+        v-for="session in sessions"
+        :key="session._id"
+        id="kuppi-session-card"
+        @click="goToDetail(session._id!)"
+        class="group cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-200 overflow-hidden"
+      >
+        <!-- Card Header Strip -->
+        <div class="h-2 bg-gradient-to-r from-brand-400 to-brand-600"></div>
+        <div class="p-5">
+          <!-- Status Badge -->
+          <span 
+            :class="[
+              'inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-3',
+              session.status === 'UPCOMING' 
+                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                : session.status === 'ONGOING'
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-400'
+                : 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+            ]"
+          >
+            <span 
+              :class="[
+                'w-1.5 h-1.5 rounded-full',
+                session.status === 'UPCOMING' 
+                  ? 'bg-blue-500'
+                  : session.status === 'ONGOING'
+                  ? 'bg-success-500 animate-pulse'
+                  : 'bg-gray-400'
+              ]"
+            ></span>
+            {{ session.status }}
+          </span>
+
+          <!-- Title -->
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-brand-600 transition-colors line-clamp-2 mb-1">
+            {{ session.title }}
+          </h3>
+
+          <!-- Subject -->
+          <p class="text-sm text-brand-500 dark:text-brand-400 font-medium mb-3">
+            {{ session.subject }}
+          </p>
+
+          <!-- Meta info -->
+          <div class="flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-4">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17c0 5.523 4.477 10 10 10s10-4.477 10-10c0-6.002-4.5-10.747-10-10.747z" />
+              </svg>
+              {{ session.year }} • {{ session.semester }}
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {{ formatDate(session.date) }}
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ session.time }} • {{ session.duration }}
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              {{ session.createdBy }}
+            </div>
+            <div class="flex items-center gap-1.5 pt-1 border-t border-gray-200 dark:border-gray-700">
+              <svg class="w-3.5 h-3.5 shrink-0 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20a7 7 0 1114 0" />
+              </svg>
+              {{ sessionParticipants[session._id!] ?? 0 }} registered
+            </div>
+          </div>
+
+          <!-- Register Button -->
+          <button
+            @click="handleRegisterClick($event, session._id!)"
+            :disabled="registering[session._id!] || userRegistrations[session._id!] === true || isRegistering"
+            :class="[
+              'w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2',
+              userRegistrations[session._id!]
+                ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400 cursor-default'
+                : 'bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30'
+            ]"
+          >
+            <svg v-if="registering[session._id!]" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <svg v-else-if="userRegistrations[session._id!]" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+            {{ userRegistrations[session._id!] ? "Registered" : "Register" }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Registration Modal ─── -->
+    <transition name="fade">
+      <div
+        v-if="showRegistrationModal"
+        class="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        @click.self="closeRegistrationModal"
+      >
+        <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+          <!-- Modal Header -->
+          <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Register for Session</h2>
+            <button
+              @click="closeRegistrationModal"
+              class="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Modal Form -->
+          <form @submit.prevent="handleRegistrationFormSubmit" class="px-6 py-5 space-y-4">
+            <!-- Form Error -->
+            <div
+              v-if="registrationFormError"
+              class="px-4 py-3 rounded-lg bg-error-50 border border-error-200 text-error-700 text-sm dark:bg-error-900/20"
+            >
+              {{ registrationFormError }}
+            </div>
+
+            <!-- Student ID -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Student ID <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.studentId"
+                type="text"
+                placeholder="e.g. ST123456"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Year -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Year <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.year"
+                type="text"
+                placeholder="e.g. Year 2"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Semester -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Semester <span class="text-error-500">*</span>
+              </label>
+              <input
+                v-model="registrationForm.semester"
+                type="text"
+                placeholder="e.g. Semester 1"
+                class="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                @click="closeRegistrationModal"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="registrationFormSubmitting"
+                class="px-5 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+              >
+                <svg v-if="registrationFormSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+                {{ registrationFormSubmitting ? "Registering..." : "Register" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </transition>
+    </div>
+  </AdminLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, reactive } from "vue";
+import { useRouter } from "vue-router";
+import AdminLayout from "@/components/layout/AdminLayout.vue";
+import { useKuppiSessionsStore } from "@/store/kuppiSessions";
+
+const router = useRouter();
+const {
+  sessions,
+  loading,
+  error,
+  sessionParticipants,
+  userRegistrations,
+  isRegistering,
+  registrationError,
+  fetchKuppiSessions,
+  registerForSession,
+  checkUserRegistration,
+  getSessionParticipantCount,
+} = useKuppiSessionsStore();
+
+const registering = ref<Record<string, boolean>>({});
+
+// Registration modal state
+const showRegistrationModal = ref(false);
+const registrationFormError = ref<string | null>(null);
+const selectedSessionForRegistration = ref<string | null>(null);
+const registrationFormSubmitting = ref(false);
+
+const blankRegistrationForm = () => ({
+  studentId: "",
+  year: "",
+  semester: "",
+});
+
+const registrationForm = reactive(blankRegistrationForm());
+
+const readAuthUser = () => {
+  const raw =
+    localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+const goToDetail = (id: string) => {
+  router.push(`/kuppi-sessions/${id}`);
+};
+
+const formatDate = (dateStr: string) => {
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const handleRegisterClick = async (e: Event, sessionId: string) => {
+  e.stopPropagation();
+  const authUser = readAuthUser();
+  if (!authUser) {
+    alert("Please log in to register for a session");
+    return;
+  }
+
+  selectedSessionForRegistration.value = sessionId;
+  showRegistrationModal.value = true;
+  registrationFormError.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
+
+const closeRegistrationModal = () => {
+  showRegistrationModal.value = false;
+  registrationFormError.value = null;
+  selectedSessionForRegistration.value = null;
+  Object.assign(registrationForm, blankRegistrationForm());
+};
+
+const handleRegistrationFormSubmit = async () => {
+  if (!registrationForm.studentId.trim() || !registrationForm.year.trim() || !registrationForm.semester.trim()) {
+    registrationFormError.value = "All fields are required";
+    return;
+  }
+
+  if (!selectedSessionForRegistration.value) return;
+
+  registrationFormSubmitting.value = true;
+  registrationFormError.value = null;
+
+  const authUser = readAuthUser();
+  const success = await registerForSession(
+    selectedSessionForRegistration.value,
+    authUser._id,
+    registrationForm.studentId.trim(),
+    registrationForm.year.trim(),
+    registrationForm.semester.trim()
+  );
+
+  registrationFormSubmitting.value = false;
+
+  if (success) {
+    closeRegistrationModal();
+    // Show success message
+    alert("Successfully registered for the session!");
+  } else {
+    registrationFormError.value = registrationError.value ?? "Failed to register. Please try again.";
+  }
+};
+
+const loadSessionRegistrations = async () => {
+  const authUser = readAuthUser();
+  if (!authUser) return;
+
+  for (const session of sessions.value) {
+    await Promise.all([
+      checkUserRegistration(session._id!, authUser._id),
+      getSessionParticipantCount(session._id!),
+    ]);
+  }
+};
+
+onMounted(async () => {
+  await fetchKuppiSessions();
+  await loadSessionRegistrations();
+});
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

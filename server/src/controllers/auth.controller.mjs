@@ -100,6 +100,18 @@ export async function signin(req, res, next) {
       return;
     }
 
+    // Automatically set helper availability to active on successful login
+    await db.collection("p_helpers").updateOne(
+      {
+        $or: [
+          { auth_user_id: String(user._id) },
+          { student_id: String(user.username) }
+        ],
+        onboarding_status: "approved"
+      },
+      { $set: { availability_status: "active" } }
+    );
+
     const { password: _password, role, roles, ...safeUser } = user;
     res.json({ ...safeUser, roles: normalizeRoles({ role, roles }) });
   } catch (error) {
