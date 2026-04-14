@@ -22,14 +22,15 @@
         </div>
 
         <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
-          <li v-for="studentId in students" :key="studentId" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-            <router-link :to="`/connect-u/academic-chat/${helperProfile._id}?studentId=${studentId}`" class="flex items-center justify-between p-5">
+          <li v-for="student in students" :key="student.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <router-link :to="`/connect-u/academic-chat/${helperProfile._id}?studentId=${student.id}`" class="flex items-center justify-between p-5">
               <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-lg">
-                  S
+                <div class="w-12 h-12 flex-shrink-0 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-lg overflow-hidden">
+                  <img v-if="student.profile_picture" :src="student.profile_picture" alt="Profile" class="h-full w-full object-cover" />
+                  <span v-else>S</span>
                 </div>
                 <div>
-                  <h4 class="font-medium text-gray-900 dark:text-white">Student {{ studentId }}</h4>
+                  <h4 class="font-medium text-gray-900 dark:text-white">Student {{ student.username || student.id }}</h4>
                   <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Click to view messages</p>
                 </div>
               </div>

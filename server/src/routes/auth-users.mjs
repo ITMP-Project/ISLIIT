@@ -4,6 +4,7 @@ import {
   updateAuthUserRoles,
   updateAuthUserModules,
   updateAuthUserEmail,
+  updateAuthUserProfilePicture,
 } from "../controllers/auth-users.controller.mjs";
 
 const router = Router();
@@ -12,5 +13,6 @@ router.get("/", listAuthUsers);
 router.put("/:id/roles", updateAuthUserRoles);
 router.put("/:id/modules", updateAuthUserModules);
 router.put("/:id/email", updateAuthUserEmail);
+router.put("/:id/profile-picture", updateAuthUserProfilePicture);
 
 export default router;

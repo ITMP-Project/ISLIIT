@@ -25,8 +25,9 @@
           class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between hover:border-brand-500 transition-colors cursor-pointer group"
         >
           <div class="flex items-center gap-4">
-             <div class="w-12 h-12 bg-brand-50 dark:bg-brand-500/10 rounded-full flex items-center justify-center text-brand-500 font-bold border border-brand-100 dark:border-brand-500/20">
-                {{ getParticipantName(conv).charAt(0).toUpperCase() }}
+             <div class="w-12 h-12 flex-shrink-0 bg-brand-50 dark:bg-brand-500/10 rounded-full flex items-center justify-center text-brand-500 font-bold border border-brand-100 dark:border-brand-500/20 overflow-hidden">
+                <img v-if="getParticipantProfilePicture(conv)" :src="getParticipantProfilePicture(conv)" alt="Profile" class="h-full w-full object-cover" />
+                <span v-else>{{ getParticipantName(conv).charAt(0).toUpperCase() }}</span>
              </div>
              <div>
                <h4 class="text-base font-bold text-gray-900 dark:text-white group-hover:text-brand-500 transition-colors">{{ getParticipantName(conv) }}</h4>
@@ -92,6 +93,13 @@ const getParticipantName = (conv) => {
         return conv.helper?.name ? `Helper ${conv.helper.name}` : `Helper (ID: ${conv.helper?.student_id || conv.helper_id})`;
     }
     // If I am the helper, I help the student
-    return `Student (ID: ${conv.student_id})`;
+    return conv.student?.username ? `Student (${conv.student.username})` : `Student (ID: ${conv.student_id})`;
+};
+
+const getParticipantProfilePicture = (conv) => {
+    if (conv.student_id === currentUserId.value) {
+        return conv.helper?.profile_picture || null;
+    }
+    return conv.student?.profile_picture || null;
 };
 </script>

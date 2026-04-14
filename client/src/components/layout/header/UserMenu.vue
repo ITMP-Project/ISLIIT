@@ -9,7 +9,14 @@
       :aria-expanded="dropdownOpen"
       @click.prevent="toggleDropdown"
     >
+      <img
+        v-if="authUser?.profile_picture"
+        :src="authUser.profile_picture"
+        alt="User Profile"
+        class="h-11 w-11 rounded-full object-cover shadow-sm"
+      />
       <span
+        v-else
         class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-500
                text-sm font-semibold text-white shadow-sm"
       >
@@ -42,7 +49,14 @@
         role="menu"
       >
         <div class="flex items-center gap-3 border-b border-gray-200 px-2 pb-3 dark:border-gray-800">
+          <img
+            v-if="authUser?.profile_picture"
+            :src="authUser.profile_picture"
+            alt="User Profile"
+            class="h-10 w-10 rounded-full object-cover"
+          />
           <span
+            v-else
             class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500
                    text-xs font-semibold text-white"
           >

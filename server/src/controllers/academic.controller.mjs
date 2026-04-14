@@ -217,8 +217,13 @@ export const getHelperInbox = async (req, res, next) => {
     const db = await getDb();
     
     const messages = await db.collection("academic_chats").find({ helperId }).toArray();
-    const students = [...new Set(messages.map(m => m.studentId))];
+    const studentIds = [...new Set(messages.map(m => m.studentId))];
     
+    const students = await Promise.all(studentIds.map(async id => {
+      const student = await db.collection("auth_users").findOne({ $or: [{username: id}, { _id: id }] });
+      return student ? { id, profile_picture: student.profile_picture, username: student.username } : { id };
+    }));
+
     res.status(200).json(students);
   } catch (err) {
     next(err);
