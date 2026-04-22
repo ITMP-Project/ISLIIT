@@ -57,11 +57,11 @@
 
           <div class="mt-8 border-t border-gray-100 dark:border-gray-700 pt-8">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Expertise & Specialties</h3>
-            <div class="flex flex-wrap gap-2">
-               <span class="px-3 py-1.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold rounded-full">Stress Management</span>
-               <span class="px-3 py-1.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold rounded-full">Academic Anxiety</span>
-               <span class="px-3 py-1.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold rounded-full">Depression Counseling</span>
-               <span class="px-3 py-1.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold rounded-full">Mindfulness</span>
+            <div class="flex flex-wrap gap-2" v-if="helper.specialties && helper.specialties.length > 0">
+               <span v-for="spec in helper.specialties" :key="spec" class="px-3 py-1.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-semibold rounded-full">{{ spec }}</span>
+            </div>
+            <div class="text-gray-500 text-sm dark:text-gray-400" v-else>
+               No specific specialties listed.
             </div>
           </div>
         </div>
