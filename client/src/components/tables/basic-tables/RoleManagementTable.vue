@@ -197,7 +197,7 @@ const roleOptions = computed(() => {
     ? roles.value.map((role) => String(role.name ?? "").trim()).filter(Boolean)
     : [];
   const unique = new Set([...base, ...existing]);
-  return Array.from(unique);
+  return Array.from(unique).filter((role) => role.toLowerCase() !== "students");
 });
 
 const openAssignModal = (user: AuthUser) => {

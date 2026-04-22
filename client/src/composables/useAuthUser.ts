@@ -14,11 +14,12 @@ type AuthUser = {
 
 const authUserRef = ref<AuthUser | null>(null)
 
-function loadAuthUser() {
-  if (authUserRef.value) return
-
+export function refreshAuthUser() {
   const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
-  if (!raw) return
+  if (!raw) {
+    authUserRef.value = null
+    return
+  }
 
   try {
     authUserRef.value = JSON.parse(raw)
@@ -27,8 +28,16 @@ function loadAuthUser() {
   }
 }
 
+export function clearAuthUser() {
+  localStorage.removeItem('authUser')
+  sessionStorage.removeItem('authUser')
+  authUserRef.value = null
+}
+
 export function useAuthUser() {
-  loadAuthUser()
+  if (!authUserRef.value) {
+    refreshAuthUser()
+  }
 
   const authUser = computed(() => authUserRef.value)
 

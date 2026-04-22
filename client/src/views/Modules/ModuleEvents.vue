@@ -30,7 +30,12 @@
         </div>
 
         <div v-else>
-          <div v-if="error" class="mt-3 rounded-lg border border-error-200 bg-error-50 px-4 py-2 text-xs text-error-700 dark:border-error-900/60 dark:bg-error-950/40 dark:text-error-300">
+          <div v-if="loading && !events.length" class="flex flex-col items-center justify-center py-12">
+            <div class="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
+            <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">Loading events...</p>
+          </div>
+
+          <div v-else-if="error" class="mt-3 rounded-lg border border-error-200 bg-error-50 px-4 py-2 text-xs text-error-700 dark:border-error-900/60 dark:bg-error-950/40 dark:text-error-300">
             {{ error }}
           </div>
 
@@ -189,10 +194,14 @@
             </button>
             <button
               type="submit"
-              class="rounded-lg bg-brand-500 px-4 py-1.5 font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-1.5 font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
               :disabled="submitting"
             >
-              Save event
+              <svg v-if="submitting" class="h-3 w-3 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ submitting ? 'Saving...' : 'Save event' }}</span>
             </button>
           </div>
         </form>
@@ -210,6 +219,7 @@ import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import type { AuthUser, Module } from "@/ts/mongo";
 import { useModuleEventsStore } from "@/store/moduleEvents";
 import { useStudentRequestsStore } from "@/store/studentRequests";
+import { useNotification } from "@/composables/useNotification";
 
 const route = useRoute();
 const moduleId = computed(() => String(route.params.moduleId ?? ""));
@@ -228,6 +238,7 @@ const {
 } = useModuleEventsStore();
 
 const { modules, fetchModules } = useStudentRequestsStore();
+const { addNotification } = useNotification();
 
 const search = ref("");
 const isCreateOpen = ref(false);
@@ -323,15 +334,23 @@ const submitCreate = async () => {
   if (!moduleId.value) return;
   submitting.value = true;
   try {
-    await createEvent(moduleId.value, {
+    const result = await createEvent(moduleId.value, {
       title: form.title,
       type: form.type || "lec",
       startTime: new Date(form.startTime).toISOString(),
       endTime: new Date(form.endTime).toISOString(),
       description: form.description,
     });
-    resetForm();
-    isCreateOpen.value = false;
+    
+    if (result) {
+      addNotification("Event created successfully!", "success");
+      resetForm();
+      isCreateOpen.value = false;
+    } else {
+      addNotification(error.value || "Failed to create event", "error");
+    }
+  } catch (err: any) {
+    addNotification(err.message || "An unexpected error occurred", "error");
   } finally {
     submitting.value = false;
   }

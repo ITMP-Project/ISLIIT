@@ -1,5 +1,6 @@
 <template>
   <AdminLayout>
+    <NotificationToast />
     <PageBreadcrumb :pageTitle="currentPageTitle" />
     <div class="space-y-5 sm:space-y-6">
       <ComponentCard title="Admin Requests (Student)">
@@ -86,11 +87,34 @@
                     </p>
                   </td>
                   <td class="px-5 py-4 sm:px-6">
+                    <!-- Already approved this session -->
                     <button
-                      class="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+                      v-if="req._id && approvedIds.has(req._id)"
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed"
+                      disabled
+                    >
+                      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Already Sent
+                    </button>
+                    <!-- Pending approve -->
+                    <button
+                      v-else
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
                       @click="req._id && approve(req._id)"
                       :disabled="!req._id || approvingId === req._id"
                     >
+                      <svg
+                        v-if="approvingId === req._id"
+                        class="h-3.5 w-3.5 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.372 0 0 5.372 0 12h4z" />
+                      </svg>
                       {{ approvingId === req._id ? "Approving..." : "Approve" }}
                     </button>
                   </td>
@@ -113,10 +137,14 @@ import { computed, onMounted, ref } from "vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import ComponentCard from "@/components/common/ComponentCard.vue";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
+import NotificationToast from "@/components/common/NotificationToast.vue";
 import { useStudentRequestsStore } from "@/store/studentRequests";
+import { useNotification } from "@/composables/useNotification";
 
 const currentPageTitle = ref("Admin Requests");
 const approvingId = ref<string | null>(null);
+const approvedIds = ref<Set<string>>(new Set());
+const { addNotification } = useNotification();
 
 const {
   faculties,
@@ -180,11 +208,20 @@ const refresh = async () => {
 
 const approve = async (id: string) => {
   approvingId.value = id;
-  const result = await approveRequest(id);
-  if (result) {
-    await fetchPendingRequests();
+  try {
+    const result = await approveRequest(id);
+    if (result) {
+      approvedIds.value = new Set([...approvedIds.value, id]);
+      addNotification("Student request approved successfully!", "success");
+      await fetchPendingRequests();
+    } else {
+      addNotification("Failed to approve request. Please try again.", "error");
+    }
+  } catch {
+    addNotification("An unexpected error occurred. Please try again.", "error");
+  } finally {
+    approvingId.value = null;
   }
-  approvingId.value = null;
 };
 
 onMounted(async () => {

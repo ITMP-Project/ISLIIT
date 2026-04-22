@@ -191,40 +191,26 @@ import { useRoute } from 'vue-router'
 
 import {
   GridIcon,
-  CalenderIcon,
   UserCircleIcon,
   DocsIcon,
-  PieChartIcon,
   ChevronDownIcon,
   HorizontalDots,
-  PageIcon,
-  TableIcon,
   ListIcon,
-  PlugInIcon,
+  ShieldCheckIcon,
+  UsersIcon,
 } from '../../icons'
 
 import BoxCubeIcon from '@/icons/BoxCubeIcon.vue'
 import ChatIcon from '@/icons/ChatIcon.vue'
 import { useSidebar } from '@/composables/useSidebar'
+import { useAuthUser } from '@/composables/useAuthUser'
 
 const route = useRoute()
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar()
-
-const readAuthUser = () => {
-  const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
-  if (!raw) return null
-
-  try {
-    return JSON.parse(raw)
-  } catch (error) {
-    return null
-  }
-}
+const { authUser } = useAuthUser()
 
 const isAdmin = computed(() => {
-  route.path // keeps the computed reactive to route changes
-
-  const user = readAuthUser()
+  const user = authUser.value
   const roles = Array.isArray(user?.roles)
     ? user.roles
     : Array.isArray(user?.role)
@@ -240,19 +226,15 @@ const menuGroups = [
   {
     title: 'Menu',
     items: [
-      
-    
-    
-      
       {
-        icon: UserCircleIcon,
-        name: "User Profile",
-        path: "/profile",
-        name: 'Dashboard',
+        icon: GridIcon,
+        name: 'User Profile',
+        path: '/profile',
+        name: 'Modules Sessions',
         subItems: [
           {
             icon: GridIcon,
-            name: 'Student Dashboard',
+            name: 'My Dashboard',
             path: '/',
             pro: false,
           },
@@ -260,6 +242,12 @@ const menuGroups = [
             icon: UserCircleIcon,
             name: 'My Timetable',
             path: '/my-module-timetable',
+            pro: false,
+          },
+          {
+            icon: GridIcon,
+            name: 'My Modules',
+            path: '/my-modules',
             pro: false,
           },
           // {
@@ -295,6 +283,7 @@ const menuGroups = [
         subItems: [
           { name: 'Mental Support', path: '/connect-u/mental-health', pro: false },
           { name: 'Academic Support', path: '/connect-u/academic-support', pro: false },
+          { name: 'Academic Admin', path: '/admin/academic', pro: false, adminOnly: true },
         ],
       },
       {
@@ -307,60 +296,18 @@ const menuGroups = [
         ],
       },
       {
-        icon: GridIcon,
+        icon: ShieldCheckIcon,
         name: 'Admin Management',
         subItems: [
-          { name: "Kuppi Sessions", path: "/kuppi-sessions-duplicate", pro: false },
+          // { name: "Kuppi Sessions", path: "/kuppi-sessions-duplicate", pro: false },
           // { name: "Comments Table", path: "/comments-table", pro: false },
-          {
-            icon: GridIcon,
-            name: 'My Modules',
-            path: '/my-modules',
-            pro: false,
-          },
+
           {
             icon: GridIcon,
             name: 'Module Events (Admin)',
             path: '/admin/module-events',
             pro: false,
             adminOnly: true,
-          },
-        ],
-      },
-      {
-        icon: UserCircleIcon,
-        name: 'Student Management',
-        subItems: [
-          
-          {
-            icon: UserCircleIcon,
-            name: 'My Modules',
-            path: '/my-modules',
-            pro: false,
-          },
-          // {
-          //   icon: CalenderIcon,
-          //   name: 'Calendar',
-          //   path: '/calendar',
-          //   pro: false,
-          // },
-          // {
-          //   icon: UserCircleIcon,
-          //   name: 'Profile',
-          //   path: '/profile',
-          //   pro: false,
-          // },
-        ],
-      },
-      {
-        icon: BoxCubeIcon,
-        name: 'Role & Access',
-        subItems: [
-          {
-            icon: BoxCubeIcon,
-            name: 'Submit Request',
-            path: '/student-request',
-            pro: false,
           },
           {
             icon: BoxCubeIcon,
@@ -378,12 +325,36 @@ const menuGroups = [
           },
         ],
       },
-        {
+      {
+        icon: UsersIcon,
+        name: 'Student Management',
+        subItems: [
+          {
+            icon: BoxCubeIcon,
+            name: 'Submit Request',
+            path: '/student-request',
+            pro: false,
+          },
+          // {
+          //   icon: CalenderIcon,
+          //   name: 'Calendar',
+          //   path: '/calendar',
+          //   pro: false,
+          // },
+          // {
+          //   icon: UserCircleIcon,
+          //   name: 'Profile',
+          //   path: '/profile',
+          //   pro: false,
+          // },
+        ],
+      },
+      {
         icon: UserCircleIcon,
         name: 'User Profile',
         path: '/profile',
       },
-    
+
       // {
       //   name: 'Forms',
       //   icon: ListIcon,
