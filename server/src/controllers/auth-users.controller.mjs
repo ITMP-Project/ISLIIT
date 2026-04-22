@@ -202,3 +202,57 @@ export async function updateAuthUserEmail(req, res, next) {
     next(error);
   }
 }
+
+export async function updateAuthUserProfilePicture(req, res, next) {
+  try {
+    const idQuery = buildIdQuery(req.params.id);
+    if (!idQuery) {
+      res.status(400).json({ error: "Invalid user id" });
+      return;
+    }
+
+    const profilePic = req.body?.profile_picture;
+    if (!profilePic) {
+      res.status(400).json({ error: "Profile picture data is required" });
+      return;
+    }
+
+    const db = await getDb();
+    const user = await db.collection("auth_users").findOne(idQuery);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Update in auth_users
+    const result = await db.collection("auth_users").findOneAndUpdate(
+      { _id: user._id },
+      { $set: { profile_picture: profilePic } },
+      { returnDocument: "after" }
+    );
+
+    // Propagate changes to support providers, if registered
+    const userIdString = String(user._id);
+    const userIdentityQuery = {
+      $or: [
+        { student_id: user.username },
+        { auth_user_id: userIdString },
+        { student_id: userIdString }
+      ]
+    };
+
+    await db.collection("p_helpers").updateMany(
+      userIdentityQuery,
+      { $set: { profile_picture: profilePic } }
+    );
+
+    await db.collection("academic_helpers").updateMany(
+      userIdentityQuery,
+      { $set: { profile_picture: profilePic } }
+    );
+
+    res.json(stripPassword(result.value ?? { ...user, profile_picture: profilePic }));
+  } catch (error) {
+    next(error);
+  }
+}

@@ -105,7 +105,7 @@ export const getUserConversations = async (req, res, next) => {
             ]
         }).sort({ created_at: -1 }).toArray();
 
-        // Populate helpers 
+        // Populate helpers and students
         const populatedConvs = await Promise.all(conversations.map(async conv => {
             const helperParams = {};
             if (ObjectId.isValid(conv.helper_id)) {
@@ -114,9 +114,31 @@ export const getUserConversations = async (req, res, next) => {
                 helperParams.student_id = conv.helper_id;
             }
             const helper = await db.collection("p_helpers").findOne(helperParams);
+            
+            let student = null;
+            if (conv.student_id) {
+                const studentQuery = {
+                    $or: [
+                        { _id: conv.student_id },
+                        { username: conv.student_id }
+                    ]
+                };
+                if (ObjectId.isValid(conv.student_id)) {
+                    studentQuery.$or.push({ _id: new ObjectId(conv.student_id) });
+                }
+                const foundStudent = await db.collection("auth_users").findOne(studentQuery);
+                if (foundStudent) {
+                    student = {
+                        username: foundStudent.username,
+                        profile_picture: foundStudent.profile_picture
+                    };
+                }
+            }
+
             return {
                 ...conv,
-                helper: helper || null
+                helper: helper || null,
+                student: student || null
             };
         }));
 
