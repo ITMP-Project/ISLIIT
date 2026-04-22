@@ -9,9 +9,14 @@
            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Module Helpers</h2>
            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Connect with students who excel in this module.</p>
         </div>
-        <button v-if="!isAdmin && !myHelperProfile" @click="showModal = true" class="mt-4 sm:mt-0 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors">
-          Become a Helper
-        </button>
+        <div v-if="!isAdmin && !myHelperProfile" class="mt-4 sm:mt-0">
+          <button v-if="!applicationStatus" @click="showModal = true" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg transition-colors">
+            Become a Helper
+          </button>
+          <div v-else class="px-4 py-2 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg font-medium text-sm inline-block">
+            Application Status: <span class="capitalize">{{ applicationStatus.status }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Helpers List -->
@@ -38,7 +43,7 @@
             <p class="text-brand-500 text-xs font-semibold mb-3">Year {{ helper.year_of_study }}</p>
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-5 leading-relaxed">{{ helper.introduction }}</p>
             
-            <button v-if="!myHelperProfile || helper._id !== myHelperProfile._id" @click="$router.push(`/connect-u/chat/${helper._id}`)" class="mt-auto w-full py-2.5 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium text-sm rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-center gap-2">
+            <button v-if="!myHelperProfile || String(helper._id) !== String(myHelperProfile._id)" @click="$router.push(`/connect-u/academic-chat/${helper._id}`)" class="mt-auto w-full py-2.5 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium text-sm rounded-lg border border-gray-200 dark:border-gray-600 transition-colors flex items-center justify-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
               Consult
             </button>
@@ -57,7 +62,7 @@
            <form @submit.prevent="submitApplication" class="space-y-4">
              <div>
                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student ID</label>
-               <input v-model="form.student_id" required pattern="{10}" title="Student ID must be exactly 10 digits" type="text" class="w-full rounded-lg border border-stroke bg-transparent py-2.5 px-4 outline-none transition focus:border-brand-500 active:border-brand-500 dark:border-form-strokedark dark:bg-form-input">
+               <input v-model="form.student_id" required pattern="^[A-Za-z]{2}\d{8}$" title="Student ID must be 2 letters followed by 8 numbers (e.g., IT23819800)" type="text" class="w-full rounded-lg border border-stroke bg-transparent py-2.5 px-4 outline-none transition focus:border-brand-500 active:border-brand-500 dark:border-form-strokedark dark:bg-form-input">
              </div>
              <div>
                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contact No</label>
@@ -115,14 +120,6 @@ const submitting = ref(false);
 const appSuccess = ref(false);
 const appError = ref("");
 
-const form = ref({
-  student_id: "",
-  contact_no: "",
-  name: "",
-  year_of_study: "",
-  introduction: ""
-});
-
 const readAuthUser = () => {
   const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
   if (!raw) return null;
@@ -134,6 +131,21 @@ const readAuthUser = () => {
 };
 
 const currentUser = ref(readAuthUser());
+
+let defaultStudentId = "";
+if (currentUser.value?.student_id) {
+  defaultStudentId = currentUser.value.student_id;
+} else if (currentUser.value?.username && /^[A-Za-z]{2}\d{8}$/.test(currentUser.value.username)) {
+  defaultStudentId = currentUser.value.username;
+}
+
+const form = ref({
+  student_id: defaultStudentId,
+  contact_no: "",
+  name: currentUser.value?.name || currentUser.value?.fullName || currentUser.value?.username || "",
+  year_of_study: "",
+  introduction: ""
+});
 
 const isAdmin = computed(() => {
   if (!currentUser.value) return false;
@@ -153,14 +165,26 @@ const isHelperForModule = computed(() => {
 });
 
 const myHelperProfile = ref(null);
+const applicationStatus = ref(null);
 
 onMounted(async () => {
   const { id } = route.params; // moduleId
   
-  if (currentUser.value?.username) {
+  if (defaultStudentId) {
     try {
-      const pRes = await fetch(`${apiUrl}/api/academic/helpers/by-student/${currentUser.value.username}`);
+      const pRes = await fetch(`${apiUrl}/api/academic/helpers/by-student/${defaultStudentId}`);
       if (pRes.ok) myHelperProfile.value = await pRes.json();
+    } catch(e) {}
+    
+    // Check application status for this specific module
+    try {
+      const sRes = await fetch(`${apiUrl}/api/academic/helpers/status/${id}/${defaultStudentId}`);
+      if (sRes.ok) {
+        const data = await sRes.json();
+        if (data.applied) {
+          applicationStatus.value = data;
+        }
+      }
     } catch(e) {}
   }
 
@@ -189,10 +213,17 @@ const submitApplication = async () => {
     
     if(res.ok) {
       appSuccess.value = true;
+      applicationStatus.value = { applied: true, status: "pending" };
       setTimeout(() => {
         showModal.value = false;
         appSuccess.value = false;
-        form.value = { student_id: "", contact_no: "", name: "", year_of_study: "", introduction: "" };
+        form.value = { 
+          student_id: defaultStudentId,
+          contact_no: "", 
+          name: currentUser.value?.name || currentUser.value?.fullName || currentUser.value?.username || "", 
+          year_of_study: "", 
+          introduction: "" 
+        };
       }, 2000);
     } else {
       const data = await res.json();
