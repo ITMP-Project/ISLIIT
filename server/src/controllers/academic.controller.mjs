@@ -192,10 +192,43 @@ export const getHelpersByModule = async (req, res, next) => {
   }
 };
 
+export const getHelperApplicationStatus = async (req, res, next) => {
+  try {
+    const { moduleId, studentId } = req.params;
+    const db = await getDb();
+    const existing = await db.collection("academic_helpers").findOne({ 
+       module_id: moduleId, 
+       $or: [
+         { student_id: studentId },
+         { name: studentId }
+       ]
+    });
+    if (existing) {
+      res.status(200).json({ applied: true, status: existing.status });
+    } else {
+      res.status(200).json({ applied: false });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const applyHelper = async (req, res, next) => {
   try {
     const { valid, errors, value } = validateAcademicHelperPayload(req.body);
     if (!valid) return res.status(400).json({ errors });
+
+    const db = await getDb();
+    
+    // Check if already applied
+    const existing = await db.collection("academic_helpers").findOne({ 
+       student_id: value.student_id, 
+       module_id: value.module_id 
+    });
+    
+    if (existing) {
+       return res.status(400).json({ error: "You have already applied to be a helper for this module." });
+    }
 
     const newHelper = {
       ...value,
@@ -203,7 +236,6 @@ export const applyHelper = async (req, res, next) => {
       created_at: new Date()
     };
 
-    const db = await getDb();
     const result = await db.collection("academic_helpers").insertOne(newHelper);
     res.status(201).json({ _id: result.insertedId, ...newHelper });
   } catch (err) {
@@ -249,6 +281,91 @@ export const getChatMessages = async (req, res, next) => {
   }
 };
 
+export const markMessagesAsRead = async (req, res, next) => {
+  try {
+    const { helperId } = req.params;
+    const { studentId, reader } = req.body;
+    
+    if (!studentId || !reader) {
+      return res.status(400).json({ error: "studentId and reader are required" });
+    }
+
+    const db = await getDb();
+    
+    const result = await db.collection("academic_chats").updateMany(
+      { helperId, studentId, sender: { $ne: reader }, isRead: false },
+      { $set: { isRead: true } }
+    );
+    res.status(200).json({ success: true, updated: result.modifiedCount });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getUnreadCount = async (req, res, next) => {
+  try {
+    const { helperId } = req.params;
+    
+    const db = await getDb();
+    const helper = await db.collection("academic_helpers").findOne({ _id: new ObjectId(helperId) });
+    if (!helper) return res.status(404).json({ error: "Helper not found" });
+
+    const count = await db.collection("academic_chats").countDocuments({
+      helperId,
+      sender: { $nin: [helper.student_id, helper.name] }, // sender is not the helper
+      $or: [{ isRead: false }, { isRead: { $exists: false } }]
+    });
+
+    res.status(200).json({ count });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getStudentUnreadCount = async (req, res, next) => {
+  try {
+    const { studentId } = req.params;
+    const db = await getDb();
+    
+    // Find unread messages where this student is the studentId and someone else is the sender
+    const count = await db.collection("academic_chats").countDocuments({
+      studentId,
+      sender: { $ne: studentId },
+      $or: [{ isRead: false }, { isRead: { $exists: false } }]
+    });
+
+    res.status(200).json({ count });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getStudentInbox = async (req, res, next) => {
+  try {
+    const { studentId } = req.params;
+    const db = await getDb();
+    
+    // Find all chats where studentId matches
+    const messages = await db.collection("academic_chats").find({ studentId }).toArray();
+    
+    // Get unique helperIds
+    const helperIds = [...new Set(messages.map(m => m.helperId))];
+    
+    if (helperIds.length === 0) {
+      return res.status(200).json([]);
+    }
+    
+    // Fetch helper details
+    const helpers = await db.collection("academic_helpers")
+      .find({ _id: { $in: helperIds.map(id => new ObjectId(id)) } })
+      .toArray();
+      
+    res.status(200).json(helpers);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const sendChatMessage = async (req, res, next) => {
   try {
     const { helperId } = req.params;
@@ -259,11 +376,19 @@ export const sendChatMessage = async (req, res, next) => {
     }
 
     const db = await getDb();
+    const helper = await db.collection("academic_helpers").findOne({ _id: new ObjectId(helperId) });
+    if (!helper) return res.status(404).json({ error: "Helper not found" });
+
+    if (String(helper.student_id) === String(studentId)) {
+      return res.status(400).json({ error: "You cannot send messages to yourself." });
+    }
+
     const message = {
       helperId,
       studentId,
       sender,
       text,
+      isRead: false,
       timestamp: new Date()
     };
 
@@ -279,11 +404,31 @@ export const getHelperByStudentId = async (req, res, next) => {
     const { studentId } = req.params;
     const db = await getDb();
     
-    // We fetch the first approved helper application matching the student_id
+    // We fetch the first approved helper application matching the student_id or name
     const helper = await db.collection("academic_helpers").findOne({ 
-      student_id: studentId,
+      $or: [
+        { student_id: studentId },
+        { name: studentId }
+      ],
       status: "approved"
     });
+    
+    if (!helper) {
+      return res.status(404).json({ error: "Helper profile not found." });
+    }
+    
+    res.status(200).json(helper);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getHelperById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const db = await getDb();
+    
+    const helper = await db.collection("academic_helpers").findOne({ _id: new ObjectId(id) });
     
     if (!helper) {
       return res.status(404).json({ error: "Helper profile not found." });

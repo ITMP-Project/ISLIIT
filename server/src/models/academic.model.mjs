@@ -25,8 +25,13 @@ export function validateAcademicHelperPayload(payload, { partial = false } = {})
         continue;
       }
 
-      if (["student_id", "contact_no"].includes(field) && !/^\d{10}$/.test(raw)) {
-        errors.push(`${field} must be exactly 10 digits`);
+      if (field === "contact_no" && !/^\d{10}$/.test(raw)) {
+        errors.push(`contact_no must be exactly 10 digits`);
+        continue;
+      }
+
+      if (field === "student_id" && !/^[a-zA-Z]{2}\d{8}$/.test(raw)) {
+        errors.push(`student_id must be 2 letters followed by 8 numbers`);
         continue;
       }
 

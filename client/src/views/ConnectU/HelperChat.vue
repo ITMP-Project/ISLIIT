@@ -11,7 +11,7 @@
             {{ isCurrentHelper ? 'S' : 'H' }}
           </div>
           <div>
-            <h3 class="font-bold text-gray-900 dark:text-white">{{ isCurrentHelper ? 'Student Consultation' : 'Helper Consultation' }}</h3>
+            <h3 class="font-bold text-gray-900 dark:text-white">{{ chatPartnerName }}</h3>
             <p class="text-xs text-green-500 font-medium">Active</p>
           </div>
         </div>
@@ -21,17 +21,17 @@
           
           <div v-for="msg in messages" :key="msg._id" :class="[
             'flex flex-col',
-            msg.sender === currentUser?.username ? 'items-end w-full' : 'items-start w-full'
+            msg.sender === defaultStudentId ? 'items-end w-full' : 'items-start w-full'
           ]">
             <div :class="[
               'max-w-[75%] rounded-2xl px-5 py-3 text-sm shadow-sm break-words',
-              msg.sender === currentUser?.username 
+              msg.sender === defaultStudentId 
                 ? 'bg-green-500 text-white rounded-tr-sm' 
                 : 'bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-tl-sm'
             ]">
               {{ msg.text }}
             </div>
-            <span class="text-xs text-gray-400 mt-1" :class="msg.sender === currentUser?.username ? 'mr-1' : 'ml-1'">
+            <span class="text-xs text-gray-400 mt-1" :class="msg.sender === defaultStudentId ? 'mr-1' : 'ml-1'">
               {{ msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now' }}
             </span>
           </div>
@@ -77,9 +77,17 @@ const readAuthUser = () => {
   try { return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
 };
 const currentUser = ref(readAuthUser());
+const defaultStudentId = computed(() => {
+  if (currentUser.value?.student_id) return currentUser.value.student_id;
+  if (currentUser.value?.username && /^[A-Za-z]{2}\d{8}$/.test(currentUser.value.username)) return currentUser.value.username;
+  return currentUser.value?.username || "unknown";
+});
+
 const helperId = route.params.id;
-const studentId = computed(() => route.query.studentId || currentUser.value?.username);
+const studentId = computed(() => route.query.studentId || defaultStudentId.value);
 const isCurrentHelper = computed(() => !!route.query.studentId); // if accessed from inbox
+
+const chatPartnerName = ref(isCurrentHelper.value ? `${studentId.value}` : 'Consultation');
 
 const messageInput = ref("");
 const messages = ref([]);
@@ -95,6 +103,13 @@ const fetchMessages = async () => {
         messages.value = data;
         scrollToBottom();
       }
+      
+      // Mark messages as read when fetched
+      fetch(`${apiUrl}/api/academic/chat/read/${helperId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId: studentId.value, reader: defaultStudentId.value })
+      }).catch(e => {});
     }
   } catch(e) { console.error(e); }
 };
@@ -107,6 +122,17 @@ const scrollToBottom = () => {
 };
 
 onMounted(() => {
+  if (!isCurrentHelper.value) {
+    fetch(`${apiUrl}/api/academic/helpers/${helperId}`)
+      .then(r => r.json())
+      .then(data => {
+        if(data && !data.error) {
+          chatPartnerName.value = data.name || `Helper ${data.student_id}`;
+        }
+      })
+      .catch(e => console.error(e));
+  }
+  
   fetchMessages();
   pollInterval = setInterval(fetchMessages, 3000);
 });
@@ -124,7 +150,7 @@ const sendMessage = async () => {
   // Optimistic UI
   messages.value.push({
     _id: Date.now().toString(),
-    sender: currentUser.value.username,
+    sender: defaultStudentId.value,
     text,
     timestamp: new Date()
   });
@@ -136,7 +162,7 @@ const sendMessage = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         studentId: studentId.value,
-        sender: currentUser.value.username,
+        sender: defaultStudentId.value,
         text
       })
     });

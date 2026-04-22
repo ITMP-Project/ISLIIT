@@ -5,7 +5,14 @@
       
       <!-- Selection Flow -->
       <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Find Modules</h3>
+        <div class="flex flex-row justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Find Modules</h3>
+          <router-link to="/connect-u/chat/my-inbox" class="relative flex items-center gap-2 px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-600 dark:bg-brand-500/10 dark:hover:bg-brand-500/20 dark:text-brand-400 rounded-lg font-medium transition-colors text-sm border border-brand-100 dark:border-brand-500/20">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            My Consultations
+            <span v-if="myInboxCount > 0" class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-800">{{ myInboxCount }}</span>
+          </router-link>
+        </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Faculty Select -->
@@ -94,6 +101,20 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 const currentPageTitle = ref("Academic Support");
 const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
+const readAuthUser = () => {
+  const raw = localStorage.getItem("authUser") || sessionStorage.getItem("authUser");
+  try { return raw ? JSON.parse(raw) : null; } catch(e) { return null; }
+};
+const currentUser = ref(readAuthUser());
+const myHelperProfile = ref(null);
+const myInboxCount = ref(0);
+
+const defaultStudentId = computed(() => {
+  if (currentUser.value?.student_id) return currentUser.value.student_id;
+  if (currentUser.value?.username && /^[A-Za-z]{2}\d{8}$/.test(currentUser.value.username)) return currentUser.value.username;
+  return currentUser.value?.username || "unknown";
+});
+
 const faculties = ref([]);
 const specializations = ref([]);
 const modules = ref([]);
@@ -110,6 +131,34 @@ const allSelected = computed(() => {
 });
 
 onMounted(async () => {
+  if (defaultStudentId.value && defaultStudentId.value !== "unknown") {
+    let totalUnread = 0;
+    
+    // 1. Fetch student unread count
+    try {
+      const sRes = await fetch(`${apiUrl}/api/academic/chat/student-unread/${defaultStudentId.value}`);
+      if (sRes.ok) {
+        const sData = await sRes.json();
+        totalUnread += (sData.count || 0);
+      }
+    } catch(e) {}
+    
+    // 2. Fetch helper unread count if they are a registered helper
+    try {
+      const pRes = await fetch(`${apiUrl}/api/academic/helpers/by-student/${defaultStudentId.value}`);
+      if (pRes.ok) {
+         myHelperProfile.value = await pRes.json();
+         const hRes = await fetch(`${apiUrl}/api/academic/chat/unread/${myHelperProfile.value._id}`);
+         if (hRes.ok) {
+           const hData = await hRes.json();
+           totalUnread += (hData.count || 0);
+         }
+      }
+    } catch(e) {}
+    
+    myInboxCount.value = totalUnread;
+  }
+
   try {
     const res = await fetch(`${apiUrl}/api/academic/faculties`);
     if(res.ok) faculties.value = await res.json();
