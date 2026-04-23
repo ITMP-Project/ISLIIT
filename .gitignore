@@ -31,3 +31,6 @@ coverage
 .vercel
 .env
 .env.*
+playwright-report
+test-results
+blob-report
