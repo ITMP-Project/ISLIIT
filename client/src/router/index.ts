@@ -355,6 +355,7 @@ const router = createRouter({
     },
     {
       path: '/signin',
+      alias: '/login',
       name: 'Signin',
       component: () => import('../views/Auth/Signin.vue'),
       meta: { title: 'Signin', public: true },
