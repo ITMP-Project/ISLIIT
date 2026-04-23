@@ -7,6 +7,7 @@ const pHelperFields = [
   "year_of_study",
   "contact_no",
   "why_select_you",
+  "specialties",
   "auth_user_id"
 ];
 
@@ -63,6 +64,16 @@ export function validatePHelperPayload(payload, { partial = false } = {}) {
     // profile_picture
     if (field === "profile_picture") {
       value[field] = String(raw).trim();
+      continue;
+    }
+
+    // specialties
+    if (field === "specialties") {
+      if (!Array.isArray(raw)) {
+        errors.push("specialties must be an array of strings");
+        continue;
+      }
+      value[field] = raw.map(s => String(s).trim()).filter(Boolean);
       continue;
     }
 
