@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { ObjectId } from "mongodb";
 import { getDb } from "../config/db.mjs";
 import { validateRolesList } from "../models/role.model.mjs";
+import { getAuthUserExpiresAt } from "../utils/auth-user-expiry.mjs";
 
 const normalizeId = (id) => {
   const raw = String(id ?? "").trim();
@@ -126,13 +127,33 @@ export async function updateAuthUserRoles(req, res, next) {
       await ensureRolesExist(db, roles);
     }
 
+    const expiresAt = getAuthUserExpiresAt(roles, new Date());
+    const update = {
+      $set: {
+        roles,
+      },
+    };
+
+    if (expiresAt) {
+      update.$set.expiresAt = expiresAt;
+    } else {
+      update.$unset = { expiresAt: "" };
+    }
+
     const result = await db.collection("auth_users").findOneAndUpdate(
       { _id: user._id },
-      { $set: { roles } },
+      update,
       { returnDocument: "after" }
     );
 
-    res.json(stripPassword(result.value ?? { ...user, roles }));
+    const fallbackUser = { ...user, roles };
+    if (expiresAt) {
+      fallbackUser.expiresAt = expiresAt;
+    } else {
+      delete fallbackUser.expiresAt;
+    }
+
+    res.json(stripPassword(result.value ?? fallbackUser));
   } catch (error) {
     next(error);
   }

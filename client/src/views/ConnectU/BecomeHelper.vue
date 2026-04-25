@@ -47,6 +47,17 @@
           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Short Bio</label>
           <textarea v-model="form.bio" required rows="3" class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-800 dark:text-white/90" placeholder="A brief introduction about yourself that will be shown on your profile"></textarea>
         </div>
+        <!-- Expertise & Specialties -->
+        <div>
+          <label class="mb-3 block text-sm font-medium text-gray-800 dark:text-white/90">Expertise & Specialties</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <label v-for="spec in availableSpecialties" :key="spec" class="flex items-center gap-2 text-sm text-gray-800 dark:text-white/90 cursor-pointer hover:opacity-80 transition-opacity">
+              <input type="checkbox" :value="spec" v-model="form.specialties" class="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800" />
+              <span>{{ spec }}</span>
+            </label>
+          </div>
+          <p class="mt-2 text-xs text-brand-500" v-if="form.specialties.length === 0">Please select at least one specialty.</p>
+        </div>
         <!-- Why Select You -->
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">Why should we select you to this position?</label>
@@ -79,10 +90,24 @@ const form = ref({
   year_of_study: '',
   contact_no: '',
   bio: '',
+  specialties: [],
   why_select_you: '',
   auth_user_id: '',
   profile_picture: ''
 });
+
+const availableSpecialties = [
+  'Stress Management', 
+  'Academic Anxiety', 
+  'Depression Counseling', 
+  'Mindfulness & Medication', 
+  'Career Guidance', 
+  'Relationship Counseling', 
+  'Trauma & Recovery', 
+  'Time Management', 
+  'Substance Abuse Support',
+  'Intercultural Adjustment'
+];
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -123,6 +148,11 @@ onMounted(async () => {
 });
 
 const submitForm = async () => {
+  if (form.value.specialties.length === 0) {
+    error.value = "Please select at least one specialty.";
+    return;
+  }
+  
   loading.value = true;
   error.value = '';
   success.value = '';

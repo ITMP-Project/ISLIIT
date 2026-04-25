@@ -55,8 +55,12 @@
                         id="username"
                         name="username"
                         placeholder="Enter your username"
+                        autocomplete="username"
                         class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                       />
+                      <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        Default admin username: admin
+                      </p>
                     </div>
                     <!-- Password -->
                     <div>
@@ -72,6 +76,7 @@
                           :type="showPassword ? 'text' : 'password'"
                           id="password"
                           placeholder="Enter your password"
+                          autocomplete="current-password"
                           class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                         />
                         <span
@@ -112,6 +117,9 @@
                           </svg>
                         </span>
                       </div>
+                      <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        Default admin password: 1234
+                      </p>
                     </div>
                     <!-- Remember me -->
                     <div>
@@ -208,9 +216,11 @@ import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { refreshAuthUser } from '@/composables/useAuthUser'
-const username = ref('')
-const password = ref('')
-const showPassword = ref(false)
+const defaultAdminUsername = 'admin'
+const defaultAdminPassword = '1234'
+const username = ref(defaultAdminUsername)
+const password = ref(defaultAdminPassword)
+const showPassword = ref(true)
 const rememberMe = ref(false)
 const submitting = ref(false)
 const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'

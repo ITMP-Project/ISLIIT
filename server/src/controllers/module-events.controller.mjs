@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { getDb } from "../config/db.mjs";
+import { getContentExpiresAt } from "../utils/content-expiry.mjs";
 
 const normalizeString = (value) => String(value ?? "").trim();
 
@@ -80,6 +81,7 @@ export async function createModuleEvent(req, res, next) {
       description,
       createdBy,
       createdAt: now,
+      expiresAt: getContentExpiresAt(now),
     };
 
     const db = await getDb();

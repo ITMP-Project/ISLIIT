@@ -156,3 +156,40 @@ Browser (Vue 3)  →  REST API (Express :4000)  →  MongoDB
 ```
 
 The frontend talks to the backend via the `VITE_API_URL` environment variable. All data is stored in MongoDB.
+
+---
+
+## Render Deployment
+
+For Render, use:
+
+1. A `Web Service` for the backend
+2. A `Static Site` for the frontend
+
+### Backend Web Service
+
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Environment variables:
+  - `MONGO_URI`
+  - `DB_NAME`
+  - `AUTH_USER_TTL_DAYS=5`
+  - `CONTENT_TTL_DAYS=5`
+  - SMTP variables if you use email
+
+### Frontend Static Site
+
+- Root directory: `client`
+- Build command: `npm install && npm run build`
+- Publish directory: `dist`
+- Environment variables:
+  - `VITE_API_URL=https://YOUR-BACKEND.onrender.com`
+  - `VITE_APP_BASE=/`
+
+### Notes
+
+- The sign-in screen prefills the password field with `1234`.
+- New plain signup accounts expire automatically after 5 days using a MongoDB TTL index.
+- New user-created content such as kuppi sessions, module events, comments, marketplace items, uploads, orders, and payments also auto-delete after 5 days.
+- When a user is promoted beyond the basic `user` role, the account expiry is removed.

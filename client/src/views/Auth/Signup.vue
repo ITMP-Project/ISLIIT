@@ -254,7 +254,7 @@ const handleSubmit = async () => {
       throw new Error(data?.error ?? `Request failed: ${response.status}`)
     }
 
-    toast.success('Account created. You can sign in now.')
+    toast.success('Account created. Basic accounts stay active for 5 days unless approved.')
     username.value = ''
     password.value = ''
     agreeToTerms.value = false
