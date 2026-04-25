@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "../config/db.mjs";
 import { validateCommentPayload } from "../models/comment.model.mjs";
+import { getContentExpiresAt } from "../utils/content-expiry.mjs";
 
 const toObjectId = (id) => {
   try {
@@ -53,7 +54,12 @@ export async function createComment(req, res, next) {
       return;
     }
 
-    const comment = { ...value, createdAt: new Date() };
+    const now = new Date();
+    const comment = {
+      ...value,
+      createdAt: now,
+      expiresAt: getContentExpiresAt(now),
+    };
     const db = await getDb();
     const result = await db.collection("comments").insertOne(comment);
     res.status(201).json({ _id: result.insertedId, ...comment });

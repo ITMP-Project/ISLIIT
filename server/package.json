@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node -e \"console.log('Server build step completed.')\"",
     "start": "node index.mjs",
     "seed": "node seed.mjs"
   },

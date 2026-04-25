@@ -1,6 +1,11 @@
 import { randomUUID } from "crypto";
 import { getDb } from "../config/db.mjs";
 import { validateAuthUserPayload } from "../models/auth-user.model.mjs";
+import {
+  getAuthUserExpiresAt,
+  getAuthUserTtlDays,
+  isAuthUserExpired,
+} from "../utils/auth-user-expiry.mjs";
 
 const defaultRoles = ["user"];
 const normalizeRoles = (user) => {
@@ -58,11 +63,13 @@ export async function signup(req, res, next) {
 
     await ensureRolesExist(db, defaultRoles);
 
+    const now = new Date();
     const user = {
       _id: randomUUID(),
       ...value,
       roles: [...defaultRoles],
-      createdAt: new Date(),
+      createdAt: now,
+      expiresAt: getAuthUserExpiresAt(defaultRoles, now),
     };
     await db.collection("auth_users").insertOne(user);
 
@@ -94,6 +101,13 @@ export async function signin(req, res, next) {
 
     const db = await getDb();
     const user = await db.collection("auth_users").findOne({ username });
+
+    if (user && isAuthUserExpired(user.expiresAt)) {
+      res.status(403).json({
+        error: `This account expired after ${getAuthUserTtlDays()} days. Please sign up again or contact an admin.`,
+      });
+      return;
+    }
 
     if (!user || String(user.password ?? "") !== String(password)) {
       res.status(401).json({ error: "Invalid username or password" });

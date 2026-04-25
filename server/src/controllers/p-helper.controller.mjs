@@ -77,7 +77,8 @@ export const updateHelperStatus = async (req, res, next) => {
       };
 
       await db.collection("auth_users").updateMany(query, {
-        $addToSet: { roles: "p_helper" }
+        $addToSet: { roles: "p_helper" },
+        $unset: { expiresAt: "" }
       });
       await db.collection("users").updateMany(query, {
         $addToSet: { roles: "p_helper" }

@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "../config/db.mjs";
 import { validateSessionParticipantPayload } from "../models/session-participants.model.mjs";
+import { getContentExpiresAt } from "../utils/content-expiry.mjs";
 
 const toObjectId = (id) => {
   try {
@@ -54,6 +55,7 @@ export async function registerForSession(req, res, next) {
     }
 
     // Register user with all fields
+    const now = new Date();
     const result = await db
       .collection("session_participants")
       .insertOne({
@@ -62,7 +64,8 @@ export async function registerForSession(req, res, next) {
         studentId: value.studentId,
         year: value.year,
         semester: value.semester,
-        createdAt: new Date(),
+        createdAt: now,
+        expiresAt: session.expiresAt ?? getContentExpiresAt(now),
       });
 
     res.status(201).json({
@@ -72,7 +75,8 @@ export async function registerForSession(req, res, next) {
       studentId: value.studentId,
       year: value.year,
       semester: value.semester,
-      createdAt: new Date(),
+      createdAt: now,
+      expiresAt: session.expiresAt ?? getContentExpiresAt(now),
     });
   } catch (error) {
     next(error);

@@ -7,7 +7,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/tailadmin-vuejs/' : '/',
+  base: process.env.VITE_APP_BASE || '/',
   plugins: [vue(), vueJsx(), ],
   resolve: {
     alias: {

@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "../config/db.mjs";
 import { validateKuppiSessionPayload } from "../models/kuppi-session.model.mjs";
+import { getContentExpiresAt } from "../utils/content-expiry.mjs";
 
 const toObjectId = (id) => {
   try {
@@ -102,10 +103,12 @@ export async function createKuppiSession(req, res, next) {
       status = "ONGOING";
     }
 
+    const now = new Date();
     const session = {
       ...value,
       status,
-      createdAt: new Date(),
+      createdAt: now,
+      expiresAt: getContentExpiresAt(now),
     };
 
     const db = await getDb();

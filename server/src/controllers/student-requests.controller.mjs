@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { getDb } from "../config/db.mjs";
 import { validateStudentRequestPayload } from "../models/student-request.model.mjs";
+import { getAuthUserExpiresAt } from "../utils/auth-user-expiry.mjs";
 
 const normalizeRoleName = (value) => String(value ?? "").trim().toLowerCase();
 
@@ -173,19 +174,28 @@ export async function approveStudentRequest(req, res, next) {
       ? request.module_ids.map((entry) => String(entry)).filter(Boolean)
       : [];
 
+    const expiresAt = getAuthUserExpiresAt(nextRoles, now);
+    const authUserUpdate = {
+      $set: {
+        roles: nextRoles,
+        student_id: studentIdValue,
+        faculty_id: request.faculty_id,
+        specialization_id: request.specialization_id,
+        year: Number(request.year),
+        semester: Number(request.semester),
+        modules: moduleIds,
+      },
+    };
+
+    if (expiresAt) {
+      authUserUpdate.$set.expiresAt = expiresAt;
+    } else {
+      authUserUpdate.$unset = { expiresAt: "" };
+    }
+
     await db.collection("auth_users").updateOne(
       { _id: authUser._id },
-      {
-        $set: {
-          roles: nextRoles,
-          student_id: studentIdValue,
-          faculty_id: request.faculty_id,
-          specialization_id: request.specialization_id,
-          year: Number(request.year),
-          semester: Number(request.semester),
-          modules: moduleIds,
-        },
-      }
+      authUserUpdate
     );
 
     const studentDoc = {

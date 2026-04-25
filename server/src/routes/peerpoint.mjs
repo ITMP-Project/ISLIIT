@@ -1,5 +1,6 @@
 import express from "express";
 import { getDb } from "../config/db.mjs";
+import { getContentExpiresAt } from "../utils/content-expiry.mjs";
 
 const router = express.Router();
 
@@ -19,12 +20,14 @@ router.post("/marketplace", async (req, res, next) => {
     try {
         const { title, author, price, seller } = req.body;
         const db = await getDb();
+        const now = new Date();
         const result = await db.collection("peerpoint_marketplace").insertOne({
             title,
             author,
             price,
             seller,
-            createdAt: new Date()
+            createdAt: now,
+            expiresAt: getContentExpiresAt(now)
         });
         res.status(201).json({ _id: result.insertedId, title, author, price, seller });
     } catch (err) {
@@ -50,11 +53,13 @@ router.post("/uploads", async (req, res, next) => {
     try {
         const { fileName, size, suggestionsApplied } = req.body;
         const db = await getDb();
+        const now = new Date();
         const result = await db.collection("peerpoint_student_uploads").insertOne({
             fileName,
             size,
             suggestionsApplied: suggestionsApplied || false,
-            uploadedAt: new Date()
+            uploadedAt: now,
+            expiresAt: getContentExpiresAt(now)
         });
         res.status(201).json({ _id: result.insertedId, fileName, status: "uploaded" });
     } catch (err) {
@@ -86,6 +91,8 @@ router.post("/order", async (req, res, next) => {
             estimatedTime: "12 mins",
             createdAt: new Date()
         };
+
+        newOrder.expiresAt = getContentExpiresAt(newOrder.createdAt);
 
         const result = await db.collection("peerpoint_orders").insertOne(newOrder);
 
@@ -136,6 +143,8 @@ router.post("/payment", async (req, res, next) => {
             status: "Paid",
             paidAt: new Date()
         };
+
+        payment.expiresAt = getContentExpiresAt(payment.paidAt);
 
         await db.collection("peerpoint_payments").insertOne(payment);
 
